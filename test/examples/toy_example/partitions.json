@@ -1,0 +1,19 @@
+[
+{
+"text": "Partitions",
+"children": [
+	{"text": "Non-Trivial Partition 0", "children": [
+		{"text": "Person.java", "children": [
+			{"text": "[6:6]"},
+			{"text": "[24:27]"},
+			{"text": "[28:29]"}
+		]}
+	]},
+	{"text": "Non-Trivial Partition 1", "children": [
+		{"text": "Person.java", "children": [
+			{"text": "[17:17]"},
+			{"text": "[20:23]"}
+		]}
+	]}
+]}
+]

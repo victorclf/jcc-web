@@ -1,0 +1,6 @@
+partitionId,isTrivial,diffSourceFile,diffLineSpanStart,diffLineSpanEnd
+0,false,somecompany/someprogram/person/Person.java,6,6
+0,false,somecompany/someprogram/person/Person.java,24,27
+0,false,somecompany/someprogram/person/Person.java,28,29
+1,false,somecompany/someprogram/person/Person.java,17,17
+1,false,somecompany/someprogram/person/Person.java,20,23
