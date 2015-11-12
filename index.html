@@ -8,10 +8,23 @@
 	<link rel="stylesheet" href="theme/default/style.min.css" />
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 	<script src="lib/jstree.min.js"></script>
+	<script type="text/javascript" src="lib/codemirror.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="theme/codemirror.css" />
+	<script type="text/javascript" src="lib/mergely.js"></script>
+	<link type="text/css" rel="stylesheet" href="theme/mergely.css" />
 	<script src="main.js"></script>
 
-	<h1>JClusterChanges</h1>	
-	<div id="jstree_partition_div"></div>
+	<h1>JClusterChanges</h1>
+	<input id="pull_request_url_input" type="url" placeholder="https://github.com/ORGANIZATION/PROJECT/pull/X" style="float:left; width: 90%;" />
+	<input id="partition_button" type="button" value="Run" style="float:left; width: 9%;" />
+	<br style="clear: left;" />
+	<br style="clear: left;" />
+	<div style="float: left; height: 100%; border: solid 1px black; margin-right: 5px;">
+		<div id="partition_tree"></div>
+	</div>
+	<div style="float: left; height: 100% ">
+		<div id="code_editor"></div>
+	</div>
 </body>
 </html>
 
