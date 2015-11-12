@@ -3,16 +3,16 @@
 "text": "Partitions",
 "children": [
 	{"text": "Non-Trivial Partition 0", "children": [
-		{"text": "Person.java", "children": [
-			{"text": "[6:6]"},
-			{"text": "[24:27]"},
-			{"text": "[28:29]"}
+		{"text": "Person.java", "before_file": "./test/examples/toy_example/Person.java.old", "after_file": "./test/examples/toy_example/Person.java", "children": [
+			{"text": "[6:6]", "line_start": 6, "line_end": 6},
+			{"text": "[24:27]", "line_start": 24, "line_end": 27},
+			{"text": "[28:29]", "line_start": 28, "line_end": 29}
 		]}
 	]},
 	{"text": "Non-Trivial Partition 1", "children": [
-		{"text": "Person.java", "children": [
-			{"text": "[17:17]"},
-			{"text": "[20:23]"}
+		{"text": "Person.java", "before_file": "./test/examples/toy_example/Person.java.old", "after_file": "./test/examples/toy_example/Person.java", "children": [
+			{"text": "[17:17]", "line_start": 17, "line_end": 17},
+			{"text": "[20:23]", "line_start": 20, "line_end": 23}
 		]}
 	]}
 ]}
