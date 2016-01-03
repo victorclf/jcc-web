@@ -24,14 +24,15 @@ $(document).ready(function() {
 			}, "text");
 		}
 		
-		//~ if (text.endsWith("]")) {
-			//~ $('#code_editor').mergely('scrollTo', 'rhs', selected.node.original.line_start);
-		//~ }
+		if (text.endsWith("]")) {
+			$('#code_editor').mergely('scrollTo', 'rhs', selected.node.original.line_start);
+		}
 	});
 	
 	
 	$('#code_editor').mergely({
-		cmsettings: { readOnly: false, lineNumbers: true },
+		cmsettings: { readOnly: true, lineNumbers: true },
+		editor_height: 600,
 		lhs: function(setValue) {
 			setValue('No diff-region selected.');
 		},
