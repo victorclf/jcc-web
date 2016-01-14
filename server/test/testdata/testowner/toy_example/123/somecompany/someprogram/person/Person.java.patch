@@ -1,0 +1,30 @@
+@@ -3,6 +3,7 @@ package somecompany.someprogram.person;
+ class Person {
+     private String firstName;
+     private String lastName;
++    private int age;
+ 
+     public String getFirstName() {
+         return firstName;
+@@ -13,10 +14,18 @@ class Person {
+     }
+ 
+     public String getLastName() {
+-        return firstName;
++        return lastName;
+     }
+ 
+-    public void setLastName(String firstName) {
+-        this.firstName = firstName;
++    public void setLastName(String lastName) {
++        this.lastName = lastName;
++    }
++
++    public int getAge() {
++        return age;
++    }
++
++    public void setAge(int age) {
++        this.age = age;
+     }
+ }
