@@ -4,4 +4,7 @@ class DiffRegion(object):
         self.sourceFilePath = sourceFilePath
         self.lineSpan = lineSpan
         self.charSpan = charSpan
-        self.enclosingMethodDefId = self.enclosingMethodDefId
+        self.enclosingMethodDefId = enclosingMethodDefId
+        
+    def __str__(self):
+        return 'diff #%d src:%s lines:%d,%d' % (self.id, self.sourceFilePath, self.lineSpan[0], self.lineSpan[1])

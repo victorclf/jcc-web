@@ -6,6 +6,7 @@ import csv
 
 import cherrypy
 import github
+import simplejson
 
 import options
 import util
@@ -63,7 +64,7 @@ class PartitionController(object):
         
     def partitionPullRequest(self, projectId, pullRequestId):
         pullPath = self._getPullRequestPath(projectId, pullRequestId)
-        os.system('%s %s' % (options.JCC_PATH, pullPath))
+        os.system('%s %s 1>tmp.out 2>tmp.err' % (options.JCC_PATH, pullPath))
         resultsPath = os.path.join(pullPath, options.PARTITION_RESULTS_FOLDER_NAME)
         if not os.path.exists(resultsPath):
             raise FailedToPartitionPullRequestException()
@@ -79,7 +80,7 @@ class PartitionController(object):
                     previousPath = os.getcwd()
                     os.chdir(root)
                     try:
-                        os.system('patch -R %s %s' % (oldFPath, patchPath))
+                        os.system('patch -R %s %s 1>tmp.out 2>tmp.err' % (oldFPath, patchPath))
                     finally:
                         os.chdir(previousPath)
         
@@ -95,29 +96,30 @@ class PartitionController(object):
             csvReader = csv.DictReader(fin)
             for row in csvReader:
                 partitionId = int(row['partitionId'])
-                isTrivial = bool(row['isTrivial'])
+                isTrivial = True if row['isTrivial'].lower() == 'true' else False
                 diffId = int(row['diffId'])
                 diffSourceFile = row['diffSourceFile']
                 diffLineSpanStart = int(row['diffLineSpanStart'])
                 diffLineSpanEnd = int(row['diffLineSpanEnd'])
-                diffCharSpanStart = int(row['diffCharSpanStart'])
-                diffCharSpanEnd = int(row['diffCharSpanEnd'])
-                enclosingMethodDefId = int(row['enclosingMethodDefId'])
+                diffCharSpanStart = int(row['diffCharacterSpanStart'])
+                diffCharSpanEnd = int(row['diffCharacterSpanEnd'])
+                enclosingMethodDefId = int(row['enclosingMethodDefId']) if row['enclosingMethodDefId'] != 'null' else None
                 
                 if partitionId not in partitions:
-                    partitions[partitionId] = Partition(partitionId, bool(isTrivial))
+                    partitions[partitionId] = Partition(partitionId, isTrivial)
                     
                 p = partitions.get(partitionId)
-                p.diffs[diffId] = DiffRegion(diffId, diffSourceFile, 
+                p.diffRegions[diffId] = DiffRegion(diffId, diffSourceFile, 
                      (diffLineSpanStart, diffLineSpanEnd), (diffCharSpanStart, diffCharSpanEnd),
                      enclosingMethodDefId)
+        return partitions
                 
     def _partitionsToMergelyJSON(self, partitions):
         rootNode = util.Object()
         rootNode.text = 'Partitions'
         rootNode.children = []
         
-        partitionsSortedByTrivial = sorted(partitions, key=lambda x : x.isTrivial)        
+        partitionsSortedByTrivial = sorted(partitions.values(), key=lambda x : x.isTrivial)        
         for p in partitionsSortedByTrivial:
             pNode = util.Object()
             pNode.text = "%s Partition %d" % (("Trivial" if p.isTrivial else "Non-Trivial"), p.id)
@@ -141,10 +143,11 @@ class PartitionController(object):
                     dNode.line_start = d.lineSpan[0]
                     dNode.line_end = d.lineSpan[1]
                     fNode.children.append(dNode)
+                pNode.children.append(fNode)
                 
             rootNode.children.append(pNode)
             
-        return rootNode
+        return simplejson.dumps(rootNode, default=lambda x: x.__dict__)
          
     
     def _pullRequestCopyIsUpToDate(self, pull, pullPath):

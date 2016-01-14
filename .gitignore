@@ -17,3 +17,4 @@ unversioned/*
 
 # Python temp files
 *.pyc
+server/test/workspace/*

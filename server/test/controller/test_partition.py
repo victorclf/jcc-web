@@ -19,6 +19,8 @@ class PartitionControllerTest(unittest.TestCase):
         self.pullRequestId = '123'
         self.pullPath = os.path.join(options.PULL_REQUESTS_PATH, self.projectOwner, self.projectName, self.pullRequestId)
         
+        self.tearDown()
+        
         util.makedirsIfNotExists(options.PULL_REQUESTS_PATH)
         shutil.copytree(os.path.join(self.TEST_DATA_PATH, self.projectOwner), 
                         os.path.join(options.PULL_REQUESTS_PATH, self.projectOwner),
@@ -31,6 +33,7 @@ class PartitionControllerTest(unittest.TestCase):
     def testPartitionPullRequest(self):
         self.controller.partitionPullRequest(self.projectId, self.pullRequestId)
         self.assertTrue(os.path.exists(os.path.join(self.pullPath, options.PARTITION_RESULTS_FOLDER_NAME)))
+        self.assertTrue(os.path.exists(os.path.join(self.pullPath, options.PARTITION_RESULTS_FOLDER_NAME, 'partitions.csv')))
         for root, dirs, files in os.walk(self.pullPath):
             for f in files:
                 if f.endswith('java'):
@@ -40,3 +43,7 @@ class PartitionControllerTest(unittest.TestCase):
                     self.assertTrue(filecmp.cmp(oldF, expectedOldF, False))
                     self.assertFalse(filecmp.cmp(oldF, os.path.join(root, f), False))
         
+    def testGetPartitionJSON(self):
+        self.controller.partitionPullRequest(self.projectId, self.pullRequestId)
+        pJSON = self.controller.getPartitionJSON(self.projectId, self.pullRequestId)
+        self.assertTrue(pJSON)

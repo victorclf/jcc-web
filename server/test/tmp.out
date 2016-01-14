@@ -1,0 +1,69 @@
+
+***Extracting missing types
+
+***Extracting missing types from somecompany/someprogram/person/Person.java
+
+***Extracting definitions from somecompany/someprogram/person/Person.java
+type definition "Person" @ somecompany/someprogram/person/Person.java:(41, 568) | Lsomecompany/someprogram/person/Person;
+field definition "firstName" @ somecompany/someprogram/person/Person.java:(60, 84) | Lsomecompany/someprogram/person/Person;.firstName)Ljava/lang/String;
+field definition "lastName" @ somecompany/someprogram/person/Person.java:(90, 113) | Lsomecompany/someprogram/person/Person;.lastName)Ljava/lang/String;
+field definition "age" @ somecompany/someprogram/person/Person.java:(119, 134) | Lsomecompany/someprogram/person/Person;.age)I
+method definition "getFirstName" @ somecompany/someprogram/person/Person.java:(141, 202) | Lsomecompany/someprogram/person/Person;.getFirstName()Ljava/lang/String;
+method definition "setFirstName" @ somecompany/someprogram/person/Person.java:(209, 294) | Lsomecompany/someprogram/person/Person;.setFirstName(Ljava/lang/String;)V
+singlevariable definition "firstName" @ somecompany/someprogram/person/Person.java:(234, 249) | Lsomecompany/someprogram/person/Person;.setFirstName(Ljava/lang/String;)V#firstName
+method definition "getLastName" @ somecompany/someprogram/person/Person.java:(301, 360) | Lsomecompany/someprogram/person/Person;.getLastName()Ljava/lang/String;
+method definition "setLastName" @ somecompany/someprogram/person/Person.java:(367, 448) | Lsomecompany/someprogram/person/Person;.setLastName(Ljava/lang/String;)V
+singlevariable definition "lastName" @ somecompany/someprogram/person/Person.java:(391, 405) | Lsomecompany/someprogram/person/Person;.setLastName(Ljava/lang/String;)V#lastName
+method definition "getAge" @ somecompany/someprogram/person/Person.java:(455, 501) | Lsomecompany/someprogram/person/Person;.getAge()I
+method definition "setAge" @ somecompany/someprogram/person/Person.java:(508, 566) | Lsomecompany/someprogram/person/Person;.setAge(I)V
+singlevariable definition "age" @ somecompany/someprogram/person/Person.java:(527, 533) | Lsomecompany/someprogram/person/Person;.setAge(I)V#age
+
+***Extracting uses from somecompany/someprogram/person/Person.java
+skipped simplename use (no associated def): somecompany | (8, 18) | somecompany
+skipped simplename use (no associated def): someprogram | (20, 30) | somecompany/someprogram
+skipped simplename use (no associated def): person | (32, 37) | somecompany/someprogram/person
+skipped simplename use (no associated def): String | (68, 73) | Ljava/lang/String;
+skipped simplename use (no associated def): String | (98, 103) | Ljava/lang/String;
+skipped simplename use (no associated def): String | (148, 153) | Ljava/lang/String;
+simplename use "firstName" @ somecompany/someprogram/person/Person.java:(187, 195) | Lsomecompany/someprogram/person/Person;.firstName)Ljava/lang/String; | hasAssocDef
+---> "firstName" @ somecompany/someprogram/person/Person.java:(60, 84) | Lsomecompany/someprogram/person/Person;.firstName)Ljava/lang/String;
+skipped simplename use (no associated def): String | (234, 239) | Ljava/lang/String;
+simplename use "firstName" @ somecompany/someprogram/person/Person.java:(267, 275) | Lsomecompany/someprogram/person/Person;.firstName)Ljava/lang/String; | hasAssocDef
+---> "firstName" @ somecompany/someprogram/person/Person.java:(60, 84) | Lsomecompany/someprogram/person/Person;.firstName)Ljava/lang/String;
+simplename use "firstName" @ somecompany/someprogram/person/Person.java:(279, 287) | Lsomecompany/someprogram/person/Person;.setFirstName(Ljava/lang/String;)V#firstName | hasAssocDef
+---> "firstName" @ somecompany/someprogram/person/Person.java:(234, 249) | Lsomecompany/someprogram/person/Person;.setFirstName(Ljava/lang/String;)V#firstName
+skipped simplename use (no associated def): String | (308, 313) | Ljava/lang/String;
+simplename use "lastName" @ somecompany/someprogram/person/Person.java:(346, 353) | Lsomecompany/someprogram/person/Person;.lastName)Ljava/lang/String; | hasAssocDef
+---> "lastName" @ somecompany/someprogram/person/Person.java:(90, 113) | Lsomecompany/someprogram/person/Person;.lastName)Ljava/lang/String;
+skipped simplename use (no associated def): String | (391, 396) | Ljava/lang/String;
+simplename use "lastName" @ somecompany/someprogram/person/Person.java:(423, 430) | Lsomecompany/someprogram/person/Person;.lastName)Ljava/lang/String; | hasAssocDef
+---> "lastName" @ somecompany/someprogram/person/Person.java:(90, 113) | Lsomecompany/someprogram/person/Person;.lastName)Ljava/lang/String;
+simplename use "lastName" @ somecompany/someprogram/person/Person.java:(434, 441) | Lsomecompany/someprogram/person/Person;.setLastName(Ljava/lang/String;)V#lastName | hasAssocDef
+---> "lastName" @ somecompany/someprogram/person/Person.java:(391, 405) | Lsomecompany/someprogram/person/Person;.setLastName(Ljava/lang/String;)V#lastName
+simplename use "age" @ somecompany/someprogram/person/Person.java:(492, 494) | Lsomecompany/someprogram/person/Person;.age)I | hasAssocDef
+---> "age" @ somecompany/someprogram/person/Person.java:(119, 134) | Lsomecompany/someprogram/person/Person;.age)I
+simplename use "age" @ somecompany/someprogram/person/Person.java:(551, 553) | Lsomecompany/someprogram/person/Person;.age)I | hasAssocDef
+---> "age" @ somecompany/someprogram/person/Person.java:(119, 134) | Lsomecompany/someprogram/person/Person;.age)I
+simplename use "age" @ somecompany/someprogram/person/Person.java:(557, 559) | Lsomecompany/someprogram/person/Person;.setAge(I)V#age | hasAssocDef
+---> "age" @ somecompany/someprogram/person/Person.java:(527, 533) | Lsomecompany/someprogram/person/Person;.setAge(I)V#age
+
+***Extracting comments from somecompany/someprogram/person/Person.java
+
+*** Extracting diffs
+parsing patch file: somecompany/someprogram/person/Person.java
+
+***Extracting related diffs
+def-use relation: (6, 6) @ somecompany/someprogram/person/Person.java <-> (24, 27) @ somecompany/someprogram/person/Person.java / "age" @ somecompany/someprogram/person/Person.java:(119, 134) | Lsomecompany/someprogram/person/Person;.age)I <-> "age" @ somecompany/someprogram/person/Person.java:(492, 494) | Lsomecompany/someprogram/person/Person;.age)I | hasAssocDef
+def-use relation: (6, 6) @ somecompany/someprogram/person/Person.java <-> (28, 29) @ somecompany/someprogram/person/Person.java / "age" @ somecompany/someprogram/person/Person.java:(119, 134) | Lsomecompany/someprogram/person/Person;.age)I <-> "age" @ somecompany/someprogram/person/Person.java:(551, 553) | Lsomecompany/someprogram/person/Person;.age)I | hasAssocDef
+use-use relation: (20, 23) @ somecompany/someprogram/person/Person.java <-> (17, 17) @ somecompany/someprogram/person/Person.java / "lastName" @ somecompany/someprogram/person/Person.java:(423, 430) | Lsomecompany/someprogram/person/Person;.lastName)Ljava/lang/String; | hasAssocDef <-> "lastName" @ somecompany/someprogram/person/Person.java:(346, 353) | Lsomecompany/someprogram/person/Person;.lastName)Ljava/lang/String; | hasAssocDef
+
+***Calculating partitions
+Partition 1 (non-trivial):
+(6, 6) @ somecompany/someprogram/person/Person.java
+(24, 27) @ somecompany/someprogram/person/Person.java
+(28, 29) @ somecompany/someprogram/person/Person.java
+
+Partition 2 (non-trivial):
+(17, 17) @ somecompany/someprogram/person/Person.java
+(20, 23) @ somecompany/someprogram/person/Person.java
+

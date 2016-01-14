@@ -48,10 +48,9 @@ class PartitionResource(object):
     def index(self, projectOwner, projectName, pullRequestId):
         projectId = '/'.join((projectOwner, projectName))
         self.partitionController.downloadPullRequestFromGitHub(projectId, pullRequestId)
-        #self.partitionController.partitionPullRequest(projectId, pullRequestId)
-        #partitionsJSON = self.partitionController.parsePartitions()
-        #return partitionsJSON;
-        return 'JSON of partitions from pull %s from %s/%s' % (pullRequestId, projectOwner, projectName)
+        self.partitionController.partitionPullRequest(projectId, pullRequestId)
+        partitionsJSON = self.partitionController.parsePartitions()
+        return partitionsJSON;
 
 
 def main():
