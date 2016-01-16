@@ -13,11 +13,11 @@ class PartitionControllerTest(unittest.TestCase):
     
     def setUp(self):
         self.controller = PartitionController()
-        self.projectOwner = 'testowner'
-        self.projectName = 'toy_example'
+        self.projectOwner = 'victorclf'
+        self.projectName = 'jcc-web-persontest'
         self.projectId = '%s/%s' % (self.projectOwner, self.projectName)
-        self.pullRequestId = '123'
-        self.pullPath = os.path.join(options.PULL_REQUESTS_PATH, self.projectOwner, self.projectName, self.pullRequestId)
+        self.pullRequestId = 1
+        self.pullPath = os.path.join(options.PULL_REQUESTS_PATH, self.projectOwner, self.projectName, str(self.pullRequestId))
         
         self.tearDown()
         
@@ -29,6 +29,12 @@ class PartitionControllerTest(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(options.PULL_REQUESTS_PATH, True)
         shutil.rmtree(os.path.join(os.getcwd(), 'workspace'), True)
+    
+    def testDownloadPullRequest(self):
+        shutil.rmtree(options.PULL_REQUESTS_PATH, True)
+        self.assertFalse(os.path.exists(os.path.join(self.pullPath)))
+        self.controller.downloadPullRequestFromGitHub(self.projectId, self.pullRequestId)
+        self.assertTrue(os.path.exists(os.path.join(self.pullPath)))
     
     def testPartitionPullRequest(self):
         self.controller.partitionPullRequest(self.projectId, self.pullRequestId)

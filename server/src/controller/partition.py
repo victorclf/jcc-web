@@ -26,7 +26,7 @@ class PartitionController(object):
         self.__gitHubInterface = None
     
     @property
-    def _gh(self):
+    def gh(self):
         return self.__gitHubInterface if self.__gitHubInterface else self._connectToGitHub()
     
     '''
@@ -44,13 +44,13 @@ class PartitionController(object):
             raise InvalidPullRequestIdException()
         pullPath = self._getPullRequestPath(projectId, pullRequestId)
         
-        util.makedirsIfNotExists(pullPath)
         if self._pullRequestCopyIsUpToDate(pull, pullPath):
             return False
         
-        shutil.rmtree(pullPath, True)
         retries = 0
         while 1:
+            shutil.rmtree(pullPath, True)
+            util.makedirsIfNotExists(pullPath)
             try:
                 self._downloadPullRequestData(pull, pullPath)
                 break
@@ -161,14 +161,14 @@ class PartitionController(object):
     def _updatePullRequestCacheInfo(self, pull, pullPath):
         pullCacheInfoPath = os.path.join(pullPath, options.PULL_CACHE_INFO_FILENAME)
         with open(pullCacheInfoPath, 'w') as fout:
-            fout.write(pull.updated_at)
+            fout.write(pull.updated_at.isoformat())
             
     def _getPullRequestPath(self, projectId, pullRequestId):
-        return os.path.join(options.PULL_REQUESTS_PATH, projectId, pullRequestId)
+        return os.path.join(options.PULL_REQUESTS_PATH, projectId, str(pullRequestId))
     
     def _connectToGitHub(self):
         try:
-            username, password = self.getGitHubCredentials()
+            username, password = self._getGitHubCredentials()
             gh = github.Github(username, password)
         except GitHubCredentialsFileNotFoundException:
             cherrypy.log.error(traceback=True)
