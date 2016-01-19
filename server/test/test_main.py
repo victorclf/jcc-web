@@ -1,4 +1,4 @@
-import filecmp
+import os
 
 import cherrypy
 from cherrypy.test import helper
@@ -6,30 +6,25 @@ from cherrypy.test import helper
 import main
 
 class Test(helper.CPWebCase):
+    TEST_DATA_PATH = os.path.join(os.getcwd(), 'testdata')
+    
     @staticmethod
     def setup_server():
         cherrypy.tree.mount(main.MainResource(), '/')
-    
-#     def test_pull_request_index(self):
-#         self.getPage("/pulls/tesla/coil/1/")
-#         self.assertStatus('200 OK')
-#         self.assertBody('Pull Request 1 from tesla/coil')
 
     def test_web_app_index(self):
         self.getPage("/")
         self.assertStatus('200 OK')
-        
-# TODO: Fix this test case that checks if static files are being served     
-#     def test_web_app_static_js(self):
-#         self.getPage("/js/main.js")
-#         self.assertStatus('200 OK')
                         
-    # TODO Update this test
     def test_pull_request_partitions(self):
-        #self.getPage("/pulls/victorclf/jcc-web-persontest/1/partitions/")
-        #self.getPage("/pulls/victorclf/jcc-web-persontest/1/files/")
+        self.getPage("/pulls/victorclf/jcc-web-persontest/1/partitions/")
         self.getPage("/pulls/victorclf/jcc-web-persontest/1/files/somecompany/someprogram/person/Person.java.old/")
-        #self.assertStatus('200 OK')
-        print '\nbody\n', self.body
+        
+        with open(os.path.join(self.TEST_DATA_PATH, 'victorclf/jcc-web-persontest/1/somecompany/someprogram/person/Person.java.old')) as fin:
+            fileContents = fin.read()
+        
+        self.assertEqual(self.body, fileContents)
+        self.assertStatus('200 OK')
+        
 
 
