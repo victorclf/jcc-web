@@ -3,10 +3,12 @@ import os
 import shutil
 import filecmp
 
+import pytest
+import marks
+
 import options
 import util
 from controller.partition import PartitionController
-
 
 class PartitionControllerTest(unittest.TestCase):
     TEST_DATA_PATH = os.path.join(os.getcwd(), 'testdata')
@@ -29,13 +31,15 @@ class PartitionControllerTest(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(options.PULL_REQUESTS_PATH, True)
         shutil.rmtree(os.path.join(os.getcwd(), 'workspace'), True)
-    
+
+    @marks.slow    
     def testDownloadPullRequest(self):
         shutil.rmtree(options.PULL_REQUESTS_PATH, True)
         self.assertFalse(os.path.exists(os.path.join(self.pullPath)))
         self.controller.downloadPullRequestFromGitHub(self.projectId, self.pullRequestId)
         self.assertTrue(os.path.exists(os.path.join(self.pullPath)))
     
+    @marks.slow
     def testPartitionPullRequest(self):
         self.controller.partitionPullRequest(self.projectId, self.pullRequestId)
         self.assertTrue(os.path.exists(os.path.join(self.pullPath, options.PARTITION_RESULTS_FOLDER_NAME)))
@@ -48,7 +52,7 @@ class PartitionControllerTest(unittest.TestCase):
                     expectedOldF = os.path.join(self.TEST_DATA_PATH, '..', os.path.relpath(oldF))
                     self.assertTrue(filecmp.cmp(oldF, expectedOldF, False))
                     self.assertFalse(filecmp.cmp(oldF, os.path.join(root, f), False))
-        
+    
     def testGetPartitionJSON(self):
         self.controller.partitionPullRequest(self.projectId, self.pullRequestId)
         pJSON = self.controller.getPartitionJSON(self.projectId, self.pullRequestId)

@@ -1,3 +1,5 @@
+import filecmp
+
 import cherrypy
 from cherrypy.test import helper
 
@@ -23,9 +25,11 @@ class Test(helper.CPWebCase):
 #         self.assertStatus('200 OK')
                         
     # TODO Update this test
-#     def test_pull_request_partitions(self):
-#         self.getPage("/pulls/tesla/coil/1/partitions/")
-#         self.assertStatus('200 OK')
-#         self.assertBody('JSON of partitions from pull 1 from tesla/coil')
+    def test_pull_request_partitions(self):
+        #self.getPage("/pulls/victorclf/jcc-web-persontest/1/partitions/")
+        #self.getPage("/pulls/victorclf/jcc-web-persontest/1/files/")
+        self.getPage("/pulls/victorclf/jcc-web-persontest/1/files/somecompany/someprogram/person/Person.java.old/")
+        #self.assertStatus('200 OK')
+        print '\nbody\n', self.body
 
 

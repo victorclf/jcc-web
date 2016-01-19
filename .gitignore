@@ -15,6 +15,11 @@ analysis.pdf
 
 unversioned/*
 
-# Python temp files
+# Temp files
 *.pyc
+server/src/workspace/*
+server/src/pulls/*
+server/test/pulls/*
 server/test/workspace/*
+tmp.err
+tmp.out

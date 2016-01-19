@@ -19,6 +19,7 @@ class InvalidProjectIdException(Exception): pass
 class InvalidPullRequestIdException(Exception): pass
 class FailedToDownloadPullRequestException(util.RichException): pass
 class FailedToPartitionPullRequestException(util.RichException): pass
+class InvalidRelativeFilePathException(util.RichException): pass
 
 
 class PartitionController(object):
@@ -29,11 +30,19 @@ class PartitionController(object):
     def gh(self):
         return self.__gitHubInterface if self.__gitHubInterface else self._connectToGitHub()
     
+    def getPullRequestFilePath(self, projectId, pullRequestId, relativeFilePath):
+        path = os.path.abspath(os.path.join(options.PULL_REQUESTS_PATH, projectId, str(pullRequestId), relativeFilePath))
+        # For security, make sure the requested files are inside the pull requests directory
+        if not path.startswith(options.PULL_REQUESTS_PATH):
+            raise InvalidRelativeFilePathException()
+        return path
+    
     '''
     returns False: pull request had been previously downloaded and local copy is up-to-date
     returns True: pull request was downloaded
     '''
     def downloadPullRequestFromGitHub(self, projectId, pullRequestId):
+        assert isinstance(pullRequestId, (int, long)), pullRequestId
         try:
             repo = self.gh.get_repo(projectId)
         except github.UnknownObjectException:
@@ -63,6 +72,7 @@ class PartitionController(object):
         self._updatePullRequestCacheInfo(pull, pullPath)
         
     def partitionPullRequest(self, projectId, pullRequestId):
+        assert isinstance(pullRequestId, (int, long)), pullRequestId
         pullPath = self._getPullRequestPath(projectId, pullRequestId)
         os.system('%s %s 1>tmp.out 2>tmp.err' % (options.JCC_PATH, pullPath))
         resultsPath = os.path.join(pullPath, options.PARTITION_RESULTS_FOLDER_NAME)
@@ -85,10 +95,11 @@ class PartitionController(object):
                         os.chdir(previousPath)
         
     def getPartitionJSON(self, projectId, pullRequestId):
+        assert isinstance(pullRequestId, (int, long)), pullRequestId
         pullPath = self._getPullRequestPath(projectId, pullRequestId)
         resultsPath = os.path.join(pullPath, options.PARTITION_RESULTS_FOLDER_NAME, options.PARTITION_RESULTS_FILENAME)
         partitions = self._partitionsFromCSV(resultsPath)
-        return self._partitionsToMergelyJSON(partitions)
+        return self._partitionsToMergelyJSON(projectId, pullRequestId, partitions)
     
     def _partitionsFromCSV(self, csvPath):
         partitions = {}
@@ -114,7 +125,7 @@ class PartitionController(object):
                      enclosingMethodDefId)
         return partitions
                 
-    def _partitionsToMergelyJSON(self, partitions):
+    def _partitionsToMergelyJSON(self, projectId, pullRequestId, partitions):
         rootNode = util.Object()
         rootNode.text = 'Partitions'
         rootNode.children = []
@@ -134,8 +145,9 @@ class PartitionController(object):
             for (f, diffs) in diffsOfFile.iteritems():
                 fNode = util.Object()
                 fNode.text = os.path.basename(f)
-                fNode.before_file = f + '.old'
-                fNode.after_file = f
+                baseFilePath = './pulls/%s/%d/files' % (projectId, pullRequestId)
+                fNode.before_file = os.path.join(baseFilePath, f + '.old')
+                fNode.after_file = os.path.join(baseFilePath, f)
                 fNode.children = []
                 for d in diffs:
                     dNode = util.Object()
