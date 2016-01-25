@@ -41,15 +41,16 @@ class PartitionResource(object):
     
     '''
     ./pulls/<projectOwner>/<projectName>/<pullId>/partitions/
+    Returns: pull request partitions (JSON)
     '''    
     @cherrypy.expose
     @cherrypy.tools.accept(media='application/json')
-    @cherrypy.tools.json_out()
     def index(self, projectOwner, projectName, pullRequestId):
         projectId = '/'.join((projectOwner, projectName))
         pullRequestId = int(pullRequestId)
-        self.partitionController.downloadPullRequestFromGitHub(projectId, pullRequestId)
-        self.partitionController.partitionPullRequest(projectId, pullRequestId)
+        pullRequestDownloaded = self.partitionController.downloadPullRequestFromGitHub(projectId, pullRequestId)
+        if pullRequestDownloaded:
+            self.partitionController.partitionPullRequest(projectId, pullRequestId)
         partitionsJSON = self.partitionController.getPartitionJSON(projectId, pullRequestId)
         return partitionsJSON;
 

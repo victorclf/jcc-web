@@ -36,8 +36,9 @@ class PartitionControllerTest(unittest.TestCase):
     def testDownloadPullRequest(self):
         shutil.rmtree(options.PULL_REQUESTS_PATH, True)
         self.assertFalse(os.path.exists(os.path.join(self.pullPath)))
-        self.controller.downloadPullRequestFromGitHub(self.projectId, self.pullRequestId)
+        self.assertTrue(self.controller.downloadPullRequestFromGitHub(self.projectId, self.pullRequestId))
         self.assertTrue(os.path.exists(os.path.join(self.pullPath)))
+        self.assertFalse(self.controller.downloadPullRequestFromGitHub(self.projectId, self.pullRequestId))
     
     @marks.slow
     def testPartitionPullRequest(self):

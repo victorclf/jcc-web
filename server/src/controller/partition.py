@@ -70,6 +70,7 @@ class PartitionController(object):
                     cherrypy.log.error('Failed to download pull request %s #%d. Retrying...' % (projectId, pull.number))
                     retries += 1
         self._updatePullRequestCacheInfo(pull, pullPath)
+        return True
         
     def partitionPullRequest(self, projectId, pullRequestId):
         assert isinstance(pullRequestId, (int, long)), pullRequestId
@@ -167,7 +168,7 @@ class PartitionController(object):
         if os.path.exists(pullCacheInfoPath):
             with open(pullCacheInfoPath) as fin:
                 cacheUpdateDate = fin.readline().strip()
-            return cacheUpdateDate == str(pull.updated_at)
+            return cacheUpdateDate == pull.updated_at.isoformat()
         return False
     
     def _updatePullRequestCacheInfo(self, pull, pullPath):
