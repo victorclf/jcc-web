@@ -1,10 +1,30 @@
+var computeMainWindowHeight = function() {
+	return $(document.body).outerHeight(true) - $('header').outerHeight(true);
+};
+
+var computeCodeEditorWidth = function () {
+	return $('#main_div').outerWidth(true) - $('#partition_tree_div').outerWidth(true) - 1;
+}
+
+var resizeDivs = function() {
+	$('#main_div').width($(document.body).outerWidth(true));
+	$('#main_div').height(computeMainWindowHeight());
+	$('#code_editor_div').width(computeCodeEditorWidth());
+	$('#code_editor_div').height(computeMainWindowHeight());
+}
+
+var onResize = function() {
+	resizeDivs();
+	// Mergely should update the height of CodeMirror lib but it doesn't
+	$('.CodeMirror').css({'height' : computeMainWindowHeight(), 
+		'width' : (computeCodeEditorWidth() / 2 - 50) + 'px'});
+	$('#code_editor').mergely('resize');
+};
+
 var initPartitionTree = function () {
 	$('#partition_tree').jstree({
 		'core' : {
-			'data' : {
-				"url" : "./test/examples/toy_example/partitions.json",
-				"dataType" : "json"
-			}
+			'data' : ['No pull request selected.']
 		}
 	});
 	
@@ -33,12 +53,14 @@ var initPartitionTree = function () {
 var initCodeEditor = function() {
 	$('#code_editor').mergely({
 		cmsettings: { readOnly: true, lineNumbers: true },
-		editor_height: 600,
-		lhs: function(setValue) {
-			setValue('No diff-region selected.');
+		editor_height: 'auto', //~ computeMainWindowHeight() + 'px',
+		editor_width: 'auto',
+		height: function(h) {
+			return computeMainWindowHeight();
 		},
-		rhs: function(setValue) {
-			setValue('No diff-region selected.');
+		width: function(w) {
+			//~ $('#code_editor').css({'display': 'inline-block', 'float': 'left', 'clear': 'none'});
+			return computeCodeEditorWidth();
 		}
 	});
 };
@@ -58,6 +80,7 @@ var parseURL = function(url) {
 }
 
 $(document).ready(function() {
+	resizeDivs();
 	initPartitionTree();
 	initCodeEditor();
 	
@@ -89,4 +112,8 @@ $(document).ready(function() {
 		};
 		$('#partition_tree').jstree(true).refresh();
 	});
+	
+	$(window).trigger('resize');
 });
+
+$(window).resize(onResize);

@@ -1,0 +1,52 @@
+* {
+  -ms-box-sizing:     border-box;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+html, body {
+	height: 100%;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+}
+
+header {
+	max-width: 100%;
+	overflow: auto;
+	margin: 5px;
+}
+
+#main_div {
+	margin: 0;
+	padding: 0;
+	height: 80%;
+	width: 100%;
+}
+
+#partition_tree_div {
+	float: left;
+	border: solid 1px black;
+	margin: 0;
+	margin-right: 10px;
+	width: 20%;
+	height: 100%;
+	overflow: auto;
+	
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+#code_editor_div {
+	float: left;
+	width: 75%;
+	height: 100%;
+}
+
+#code_editor {
+	width: 100%;
+	height: 100%;
+}
