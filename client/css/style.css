@@ -11,12 +11,21 @@ html, body {
 	padding: 0;
 	margin: 0;
 	overflow: hidden;
+	background-color: #F8F8F8;
+}
+
+h1 {
+	color: #1F1F1F;
 }
 
 header {
 	max-width: 100%;
 	overflow: auto;
-	margin: 5px;
+	padding: 5px 5px;
+	margin-bottom: 10px;
+	background-color: #eaeaea;
+	box-shadow: 0px 0px 5px 1px #c8c8c8;
+	font-family: sans-serif;
 }
 
 #main_div {
@@ -28,8 +37,10 @@ header {
 
 #partition_tree_div {
 	float: left;
-	border: solid 1px black;
+	border: solid 1px #ccc;
+	background-color: #FFFFFF;
 	margin: 0;
+	margin-left: 5px;
 	margin-right: 10px;
 	width: 20%;
 	height: 100%;
