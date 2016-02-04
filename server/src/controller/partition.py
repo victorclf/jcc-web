@@ -131,11 +131,18 @@ class PartitionController(object):
         rootNode.text = 'Partitions'
         rootNode.children = []
         
+        numNonTrivialPartitions = 0
+        numTrivialPartitions = 0
         partitionsSortedByTrivial = sorted(partitions.values(), key=lambda x : x.isTrivial)        
         for p in partitionsSortedByTrivial:
             pNode = util.Object()
             pNode.text = "%s Partition %d" % (("Trivial" if p.isTrivial else "Non-Trivial"), p.id)
             pNode.children = []
+            
+            if p.isTrivial:
+                numTrivialPartitions += 1
+            else:
+                numNonTrivialPartitions += 1
             
             diffsOfFile = {}
             for d in p.diffRegions.itervalues():
@@ -159,7 +166,9 @@ class PartitionController(object):
                 pNode.children.append(fNode)
                 
             rootNode.children.append(pNode)
-            
+        
+        rootNode.text += ' (NTP: %d / TP: %d)' % (numNonTrivialPartitions, numTrivialPartitions)
+        
         return simplejson.dumps(rootNode, default=lambda x: x.__dict__)
          
     
