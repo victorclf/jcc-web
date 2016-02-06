@@ -94,6 +94,10 @@ def main():
              'tools.staticdir.on': True,
              'tools.staticdir.dir': 'css'
          },
+        '/images' : {
+             'tools.staticdir.on': True,
+             'tools.staticdir.dir': 'images'
+         },
         '/test' : {
              'tools.staticdir.on': True,
              'tools.staticdir.dir': 'test'
