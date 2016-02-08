@@ -113,6 +113,18 @@ $(document).ready(function() {
 		$('#partition_tree').jstree(true).refresh();
 	});
 	
+	$('#menu_button').click(function () {
+		if ($('#about_div').is(":hidden")) {
+			$('#about_div').slideDown("slow");
+		} else {
+			$('#about_div').slideUp("fast");
+		}
+	});
+	
+	$('#about_close_button').click(function () {
+		$('#about_div').slideUp("fast");
+	});
+	
 	$(window).trigger('resize');
 });
 
