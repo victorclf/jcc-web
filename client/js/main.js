@@ -1,3 +1,8 @@
+var displayMessageBox = function(text) {
+	$('#msgbox_text').text(text);
+	$('#msgbox_div').css('display', 'flex');
+}
+
 var computeMainWindowHeight = function() {
 	return $(document.body).outerHeight(true) - $('header').outerHeight(true);
 };
@@ -100,7 +105,7 @@ $(document).ready(function() {
 		var pullRequestId = parseInt(paths[4], 10);
 		
 		if (paths[0] !== '' || paths[3] !== 'pull' || paths[4] === NaN) {
-			alert('Error: Invalid URL. The provided URL must follow the format: https://github.com/ORGANIZATION/PROJECT/pull/X');
+			displayMessageBox('Invalid URL. The URL of the pull request must follow the format: https://github.com/ORGANIZATION/PROJECT/pull/X');
 			return;
 		}
 		
@@ -124,6 +129,14 @@ $(document).ready(function() {
 	$('#about_close_button').click(function () {
 		$('#about_div').slideUp("fast");
 	});
+	
+	var msgBoxCloseHandler = function (e) {
+		if (e.target === this) {
+			$('#msgbox_div').css('display', 'none');
+		}
+	}
+	$('#msgbox_close_button').click(msgBoxCloseHandler);
+	$('#msgbox_div').click(msgBoxCloseHandler);
 	
 	$(window).trigger('resize');
 });

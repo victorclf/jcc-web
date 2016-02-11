@@ -189,3 +189,74 @@ header h1 {
 #about_close_button:hover {
 	background-color: rgb(100, 100, 100);
 }
+
+#msgbox_div {
+	background: rgba(0, 0, 0, 0.1);
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	z-index: 10;
+
+	align-items: center;
+	justify-content: center;
+/*
+	display: flex;
+*/
+	display: none;
+}
+
+#msgbox_div_content {
+/*
+	background: rgba(128, 128, 128, 1.0);
+*/
+	background: #eaeaea;
+	box-shadow: 0px 0px 5px 1px #c8c8c8;
+	color: #1F1F1F;
+	
+	padding: 10px;
+	max-width: 512px;
+	
+	/* For the icon */
+	position: relative;
+	padding-left: 60px;
+	
+/*
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -198px;
+	margin-left: -320px;
+	width: 640px;
+	height: 396px;
+	z-index: 20;
+*/
+}
+
+#msgbox_div_content img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 16px;
+	margin-top: 27px;
+	width: 32px;
+	height: 32px;
+}
+
+#msgbox_div p {
+	text-align: left;
+	line-height: 1.5em;
+}
+
+#msgbox_close_button_div {
+	display: flex;
+	justify-content: center;
+}
+
+#msgbox_close_button {
+	padding: 5px 20px;
+	text-align: center;
+}
+
+

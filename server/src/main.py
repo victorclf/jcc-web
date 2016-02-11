@@ -42,6 +42,8 @@ class PartitionResource(object):
     '''
     ./pulls/<projectOwner>/<projectName>/<pullId>/partitions/
     Returns: pull request partitions (JSON)
+    Errors: 
+    - Invalid Pull Request URL: 
     '''    
     @cherrypy.expose
     @cherrypy.tools.accept(media='application/json')
