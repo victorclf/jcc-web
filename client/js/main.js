@@ -70,25 +70,7 @@ var initCodeEditor = function() {
 	});
 };
 
-var parseURL = function(url) {
-	var parser = document.createElement('a');
-	parser.href = url;
-	return parser;
-	//~ Given "http://example.com:3000/pathname/?search=test#hash"
-	//~ parser.protocol; // => "http:"
-	//~ parser.hostname; // => "example.com"
-	//~ parser.port;     // => "3000"
-	//~ parser.pathname; // => "/pathname/"
-	//~ parser.search;   // => "?search=test"
-	//~ parser.hash;     // => "#hash"
-	//~ parser.host;     // => "example.com:3000"
-}
-
-$(document).ready(function() {
-	resizeDivs();
-	initPartitionTree();
-	initCodeEditor();
-	
+var initHeaderButtons = function() {
 	$('#pull_request_url_input').keyup(function(event) {
 		if(event.keyCode == 13) { // Enter/Return key
 			$("#partition_button").click();
@@ -125,11 +107,15 @@ $(document).ready(function() {
 			$('#about_div').slideUp("fast");
 		}
 	});
-	
+}
+
+var initAboutBox = function() {
 	$('#about_close_button').click(function () {
 		$('#about_div').slideUp("fast");
 	});
-	
+}
+
+var initMessageBox = function() {
 	var msgBoxCloseHandler = function (e) {
 		if (e.target === this) {
 			$('#msgbox_div').css('display', 'none');
@@ -137,7 +123,34 @@ $(document).ready(function() {
 	}
 	$('#msgbox_close_button').click(msgBoxCloseHandler);
 	$('#msgbox_div').click(msgBoxCloseHandler);
-	
+	$(document).keyup(function(e) {
+		if (e.keyCode == 27) {
+			$('#msgbox_close_button').click();
+		}
+	});
+}
+
+var parseURL = function(url) {
+	var parser = document.createElement('a');
+	parser.href = url;
+	return parser;
+	//~ Given "http://example.com:3000/pathname/?search=test#hash"
+	//~ parser.protocol; // => "http:"
+	//~ parser.hostname; // => "example.com"
+	//~ parser.port;     // => "3000"
+	//~ parser.pathname; // => "/pathname/"
+	//~ parser.search;   // => "?search=test"
+	//~ parser.hash;     // => "#hash"
+	//~ parser.host;     // => "example.com:3000"
+}
+
+$(document).ready(function() {
+	resizeDivs();
+	initPartitionTree();
+	initCodeEditor();
+	initHeaderButtons();
+	initAboutBox();
+	initMessageBox();
 	$(window).trigger('resize');
 });
 
