@@ -3,9 +3,20 @@ import cherrypy
 from cherrypy.lib.static import serve_file
 
 import options
-from controller.partition import PartitionController
+from controller.partition import *
 
 STATIC_DIR_ROOT = os.path.abspath(os.path.join(os.getcwd(), '../../client/'))
+
+WEB_EXCEPTION_MAP = {
+    InvalidProjectIdException : cherrypy.HTTPError(400, "Invalid project owner and/or project name."), 
+    InvalidPullRequestIdException : cherrypy.HTTPError(400, "Invalid pull request ID.")
+}
+
+def mapToWebException(e):
+    if type(e) in WEB_EXCEPTION_MAP:
+        raise WEB_EXCEPTION_MAP[type(e)]
+    else:
+        raise
 
 class MainResource(object):
     def __init__(self):
@@ -49,8 +60,11 @@ class PartitionResource(object):
     @cherrypy.tools.accept(media='application/json')
     def index(self, projectOwner, projectName, pullRequestId):
         projectId = '/'.join((projectOwner, projectName))
-        pullRequestId = int(pullRequestId)
-        pullRequestDownloaded = self.partitionController.downloadPullRequestFromGitHub(projectId, pullRequestId)
+        try:
+            pullRequestDownloaded = self.partitionController.downloadPullRequestFromGitHub(projectId, pullRequestId)
+        except Exception as e:
+            mapToWebException(e)
+        
         if pullRequestDownloaded:
             self.partitionController.partitionPullRequest(projectId, pullRequestId)
         partitionsJSON = self.partitionController.getPartitionJSON(projectId, pullRequestId)
@@ -74,7 +88,6 @@ class PullRequestFilesResource(object):
     @cherrypy.expose
     def index(self, projectOwner, projectName, pullRequestId, relativeFilePath):
         projectId = '/'.join((projectOwner, projectName))
-        pullRequestId = int(pullRequestId)
         path = self.partitionController.getPullRequestFilePath(projectId, pullRequestId, relativeFilePath)
         return serve_file(path)
 
@@ -105,6 +118,11 @@ def main():
              'tools.staticdir.dir': 'test'
          },
     }
+    
+    def error_page_default(status, message, traceback, version):
+        return message
+    cherrypy.config.update({'error_page.default': error_page_default})
+    
     cherrypy.quickstart(MainResource(), '/', conf)
 
 

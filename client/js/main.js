@@ -95,7 +95,10 @@ var initHeaderButtons = function() {
 		
 		$('#partition_tree').jstree(true).settings.core.data = {
 					"url" : partitionsUrl,
-					"dataType" : "json"
+					"dataType" : "json",
+					"error": function (jqXHR, textStatus, errorThrown) { 
+						displayMessageBox(jqXHR.responseText);
+					}
 		};
 		$('#partition_tree').jstree(true).refresh();
 	});

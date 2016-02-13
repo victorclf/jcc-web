@@ -16,7 +16,7 @@ class Test(helper.CPWebCase):
         self.getPage("/")
         self.assertStatus('200 OK')
                         
-    def test_pull_request_partitions(self):
+    def test_partitions(self):
         self.getPage("/pulls/victorclf/jcc-web-persontest/1/partitions/")
         self.getPage("/pulls/victorclf/jcc-web-persontest/1/files/somecompany/someprogram/person/Person.java.old/")
         
@@ -26,5 +26,17 @@ class Test(helper.CPWebCase):
         self.assertEqual(self.body, fileContents)
         self.assertStatus('200 OK')
         
-
+    def test_partitions_invalid_project_id(self):
+        self.getPage("/pulls/hggsjksdfhajdfhksadhfjkh/jcc-web-persontest/1/partitions/")
+        self.assertStatus(400)
+        self.getPage("/pulls/victorclf/hsdjasjhdsadajsdhkajshdksad/1/partitions/")
+        self.assertStatus(400)
+        
+    def test_partitions_invalid_pull_id(self):
+        self.getPage("/pulls/victorclf/jcc-web-persontest/1872/partitions/")
+        self.assertStatus(400)
+        self.getPage("/pulls/victorclf/jcc-web-persontest/1asd2/partitions/")
+        self.assertStatus(400)
+        self.getPage("/pulls/victorclf/jcc-web-persontest/asdds/partitions/")
+        self.assertStatus(400)
 

@@ -31,6 +31,7 @@ class PartitionController(object):
         return self.__gitHubInterface if self.__gitHubInterface else self._connectToGitHub()
     
     def getPullRequestFilePath(self, projectId, pullRequestId, relativeFilePath):
+        pullRequestId = self._parsePullRequestId(pullRequestId)
         path = os.path.abspath(os.path.join(options.PULL_REQUESTS_PATH, projectId, str(pullRequestId), relativeFilePath))
         # For security, make sure the requested files are inside the pull requests directory
         if not path.startswith(options.PULL_REQUESTS_PATH):
@@ -42,7 +43,7 @@ class PartitionController(object):
     returns True: pull request was downloaded
     '''
     def downloadPullRequestFromGitHub(self, projectId, pullRequestId):
-        assert isinstance(pullRequestId, (int, long)), pullRequestId
+        pullRequestId = self._parsePullRequestId(pullRequestId)
         try:
             repo = self.gh.get_repo(projectId)
         except github.UnknownObjectException:
@@ -73,7 +74,7 @@ class PartitionController(object):
         return True
         
     def partitionPullRequest(self, projectId, pullRequestId):
-        assert isinstance(pullRequestId, (int, long)), pullRequestId
+        pullRequestId = self._parsePullRequestId(pullRequestId)
         pullPath = self._getPullRequestPath(projectId, pullRequestId)
         os.system('%s %s 1>tmp.out 2>tmp.err' % (options.JCC_PATH, pullPath))
         resultsPath = os.path.join(pullPath, options.PARTITION_RESULTS_FOLDER_NAME)
@@ -96,11 +97,17 @@ class PartitionController(object):
                         os.chdir(previousPath)
         
     def getPartitionJSON(self, projectId, pullRequestId):
-        assert isinstance(pullRequestId, (int, long)), pullRequestId
+        pullRequestId = self._parsePullRequestId(pullRequestId)
         pullPath = self._getPullRequestPath(projectId, pullRequestId)
         resultsPath = os.path.join(pullPath, options.PARTITION_RESULTS_FOLDER_NAME, options.PARTITION_RESULTS_FILENAME)
         partitions = self._partitionsFromCSV(resultsPath)
         return self._partitionsToMergelyJSON(projectId, pullRequestId, partitions)
+    
+    def _parsePullRequestId(self, pullRequestId):
+        try:
+            return int(pullRequestId)
+        except:
+            raise InvalidPullRequestIdException()
     
     def _partitionsFromCSV(self, csvPath):
         partitions = {}
