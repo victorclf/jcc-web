@@ -166,7 +166,7 @@ class PartitionController(object):
                 fNode.children = []
                 for d in diffs:
                     dNode = util.Object()
-                    dNode.text = '[%d:%d]' % d.lineSpan
+                    dNode.text = '[+%d:%d]' % d.lineSpan
                     dNode.line_start = d.lineSpan[0]
                     dNode.line_end = d.lineSpan[1]
                     fNode.children.append(dNode)

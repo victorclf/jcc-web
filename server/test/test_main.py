@@ -40,3 +40,9 @@ class Test(helper.CPWebCase):
         self.getPage("/pulls/victorclf/jcc-web-persontest/asdds/partitions/")
         self.assertStatus(400)
 
+    def test_partitions_invalid_pull_request_file(self):
+        self.getPage("/pulls/victorclf/jcc-web-persontest/1/partitions/")
+        self.getPage("/pulls/victorclf/jcc-web-persontest/1/files/somecompany/someprogram/person/Person.java.old/../../../../main.py/")
+        self.assertStatus(404)
+        self.getPage("/pulls/victorclf/jcc-web-persontest/1/files/somecompany/someprogram/person/Person.java.old123/")
+        self.assertStatus(404)
