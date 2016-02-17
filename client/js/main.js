@@ -7,7 +7,7 @@ var computeMainWindowHeight = function() {
 	return $(document.body).outerHeight(true) - $('header').outerHeight(true);
 };
 
-var computeCodeEditorWidth = function () {
+var computeCodeEditorWidth = function() {
 	return $('#main_div').outerWidth(true) - $('#partition_tree_div').outerWidth(true) - 1;
 }
 
@@ -26,27 +26,44 @@ var onResize = function() {
 	$('#code_editor').mergely('resize');
 };
 
-var initPartitionTree = function () {
+var clearTree = function() {
+	$('#partition_tree').jstree(true).settings.core.data = ['No pull request selected.'];
+	$('#partition_tree').jstree(true).refresh();
+};
+
+var clearEditor = function() {
+	$('#code_editor').mergely('lhs', '');
+	$('#code_editor').mergely('rhs', '');
+};
+
+var initPartitionTree = function() {
 	$('#partition_tree').jstree({
 		'core' : {
 			'data' : ['No pull request selected.']
 		}
 	});
 	
-	$('#partition_tree').on("loaded.jstree", function () {
+	$('#partition_tree').on("loaded.jstree", function() {
 		$('#partition_tree').jstree().open_all();
 	});
 	
-	$('#partition_tree').on("select_node.jstree", function (node, selected, event) {
+	$('#partition_tree').on("select_node.jstree", function(node, selected, event) {
 		var text = selected.node.text;
+		
 		if (text.endsWith(".java")) {
-			$.get(selected.node.original.before_file, function (data) {
+			$.get(selected.node.original.before_file, function(data) {
 				$('#code_editor').mergely('lhs', data);
-			}, "text");
+			}, "text")
+				.fail(function() {
+					$('#code_editor').mergely('lhs', 'ERROR: Failed to retrieve ' + selected.node.original.after_file +  ' from the server!');
+				});
 			
-			$.get(selected.node.original.after_file, function (data) {
+			$.get(selected.node.original.after_file, function(data) {
 				$('#code_editor').mergely('rhs', data);
-			}, "text");
+			}, "text")
+				.fail(function() {
+					$('#code_editor').mergely('rhs', 'ERROR: Failed to retrieve ' + selected.node.original.after_file +  ' from the server!');
+				})
 		}
 		
 		if (text.endsWith("]")) {
@@ -77,7 +94,7 @@ var initHeaderButtons = function() {
 		}
 	});
 	
-	$('#partition_button').click(function () {
+	$('#partition_button').click(function() {
 		var url = $('#pull_request_url_input').val();
 		var parsedURL = parseURL(url);
 		// '', projectOwner, projectName, 'pull', pullRequestId
@@ -91,19 +108,21 @@ var initHeaderButtons = function() {
 			return;
 		}
 		
-		var partitionsUrl = './pulls/' + projectOwner + '/' + projectName + '/' + pullRequestId + '/partitions/';
+		clearEditor();
 		
+		var partitionsUrl = './pulls/' + projectOwner + '/' + projectName + '/' + pullRequestId + '/partitions/';
 		$('#partition_tree').jstree(true).settings.core.data = {
 					"url" : partitionsUrl,
 					"dataType" : "json",
-					"error": function (jqXHR, textStatus, errorThrown) { 
+					"error": function(jqXHR, textStatus, errorThrown) { 
 						displayMessageBox(jqXHR.responseText);
+						clearTree();
 					}
 		};
 		$('#partition_tree').jstree(true).refresh();
 	});
 	
-	$('#menu_button').click(function () {
+	$('#menu_button').click(function() {
 		if ($('#about_div').is(":hidden")) {
 			$('#about_div').slideDown("slow");
 		} else {
@@ -113,13 +132,13 @@ var initHeaderButtons = function() {
 }
 
 var initAboutBox = function() {
-	$('#about_close_button').click(function () {
+	$('#about_close_button').click(function() {
 		$('#about_div').slideUp("fast");
 	});
 }
 
 var initMessageBox = function() {
-	var msgBoxCloseHandler = function (e) {
+	var msgBoxCloseHandler = function(e) {
 		if (e.target === this) {
 			$('#msgbox_div').css('display', 'none');
 		}
@@ -130,6 +149,19 @@ var initMessageBox = function() {
 		if (e.keyCode == 27) {
 			$('#msgbox_close_button').click();
 		}
+	});
+	
+	$(document).ajaxError(function(event, jqXHR, settings, thrownError) {
+		displayMessageBox(jqXHR.responseText);
+	});
+}
+
+var initWaitCursorCallbacks = function() {
+	$(document).ajaxStart(function() {
+		$('html').addClass('waitCursor');
+	});
+	$(document).ajaxStop(function() {
+		$('html').removeClass('waitCursor');
 	});
 }
 
@@ -154,6 +186,7 @@ $(document).ready(function() {
 	initHeaderButtons();
 	initAboutBox();
 	initMessageBox();
+	initWaitCursorCallbacks();
 	$(window).trigger('resize');
 });
 
