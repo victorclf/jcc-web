@@ -48,7 +48,8 @@ var setEditorContent = function(lhsFileURL, rhsFileURL, scrollToLine) {
 			if (scrollToLine !== undefined) {
 				setTimeout(function() {
 					$('#code_editor').mergely('cm', 'rhs')
-						.scrollIntoView({line: scrollToLine, ch: 0});
+						.scrollIntoView({line: scrollToLine, ch: 0}, 
+										Math.floor($('#code_editor_div').height() / 2));
 				}, 200);
 				//~ $('#code_editor').mergely('cm', 'rhs')
 					//~ .refresh();
