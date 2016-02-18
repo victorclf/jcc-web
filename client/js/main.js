@@ -36,6 +36,51 @@ var clearEditor = function() {
 	$('#code_editor').mergely('rhs', '');
 };
 
+var setEditorContent = function(lhsFileURL, rhsFileURL, scrollToLine) {
+	var lhsData, 
+		rhsData;
+	
+	var onSuccess = function() {
+		// Barrier synchronizing both AJAX calls.
+		if (lhsData && rhsData) {
+			$('#code_editor').mergely('lhs', lhsData);
+			$('#code_editor').mergely('rhs', rhsData);
+			if (scrollToLine !== undefined) {
+				setTimeout(function() {
+					$('#code_editor').mergely('cm', 'rhs')
+						.scrollIntoView({line: scrollToLine, ch: 0});
+				}, 200);
+				//~ $('#code_editor').mergely('cm', 'rhs')
+					//~ .refresh();
+			}
+			
+			//~ TODO update file path bar
+		}
+	};
+	
+	var onError = function() {
+		var errorMsg = 'ERROR: Failed to retrieve the file from the server!';
+		$('#code_editor').mergely('lhs', errorMsg);
+		$('#code_editor').mergely('rhs', errorMsg);
+	};
+	
+	$.get(lhsFileURL, function(data) {
+		lhsData = data;
+		onSuccess();
+	}, "text")
+		.fail(function() {
+			onError();
+		});
+	
+	$.get(rhsFileURL, function(data) {
+		rhsData = data;
+		onSuccess();
+	}, "text")
+		.fail(function() {
+			onError();
+		});
+};
+
 var initPartitionTree = function() {
 	$('#partition_tree').jstree({
 		'core' : {
@@ -48,26 +93,17 @@ var initPartitionTree = function() {
 	});
 	
 	$('#partition_tree').on("select_node.jstree", function(node, selected, event) {
-		var text = selected.node.text;
+		var node = selected.node;
 		
-		if (text.endsWith(".java")) {
-			$.get(selected.node.original.before_file, function(data) {
-				$('#code_editor').mergely('lhs', data);
-			}, "text")
-				.fail(function() {
-					$('#code_editor').mergely('lhs', 'ERROR: Failed to retrieve ' + selected.node.original.after_file +  ' from the server!');
-				});
-			
-			$.get(selected.node.original.after_file, function(data) {
-				$('#code_editor').mergely('rhs', data);
-			}, "text")
-				.fail(function() {
-					$('#code_editor').mergely('rhs', 'ERROR: Failed to retrieve ' + selected.node.original.after_file +  ' from the server!');
-				})
+		if (node.text.endsWith(".java")) {
+			setEditorContent(parentNode.original.before_file, parentNode.original.after_file);
 		}
 		
-		if (text.endsWith("]")) {
-			$('#code_editor').mergely('scrollTo', 'rhs', selected.node.original.line_start);
+		if (node.text.endsWith("]")) {
+			var parentNode = $('#partition_tree').jstree(true).get_node(node.parent);
+			//~ TODO check if current file is different that parentNode file before changing
+			setEditorContent(parentNode.original.before_file, parentNode.original.after_file,
+				node.original.line_start);
 		}
 	});
 };
