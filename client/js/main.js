@@ -39,23 +39,24 @@ var clearEditor = function() {
 var setEditorContent = function(lhsFileURL, rhsFileURL, scrollToLine) {
 	var lhsData, 
 		rhsData;
+		
+	var scrollEditor = function() {
+		if (scrollToLine !== undefined) {
+			$('#code_editor').mergely('cm', 'rhs')
+				.scrollIntoView({line: scrollToLine, ch: 0}, 
+								Math.floor($('#code_editor_div').height() / 2));
+		}		
+	};
 	
 	var onSuccess = function() {
 		// Barrier synchronizing both AJAX calls.
 		if (lhsData && rhsData) {
+			$('#code_editor').mergely('clear', 'lhs');
+			$('#code_editor').mergely('clear', 'rhs');
 			$('#code_editor').mergely('lhs', lhsData);
 			$('#code_editor').mergely('rhs', rhsData);
-			if (scrollToLine !== undefined) {
-				setTimeout(function() {
-					$('#code_editor').mergely('cm', 'rhs')
-						.scrollIntoView({line: scrollToLine, ch: 0}, 
-										Math.floor($('#code_editor_div').height() / 2));
-				}, 200);
-				//~ $('#code_editor').mergely('cm', 'rhs')
-					//~ .refresh();
-			}
-			
-			//~ TODO update file path bar
+			$('#filepath_bar').val(rhsFileURL);
+			setTimeout(scrollEditor, 200);
 		}
 	};
 	
@@ -65,21 +66,25 @@ var setEditorContent = function(lhsFileURL, rhsFileURL, scrollToLine) {
 		$('#code_editor').mergely('rhs', errorMsg);
 	};
 	
-	$.get(lhsFileURL, function(data) {
-		lhsData = data;
-		onSuccess();
-	}, "text")
-		.fail(function() {
-			onError();
-		});
-	
-	$.get(rhsFileURL, function(data) {
-		rhsData = data;
-		onSuccess();
-	}, "text")
-		.fail(function() {
-			onError();
-		});
+	if ($('#filepath_bar').val() !== rhsFileURL) {
+		$.get(lhsFileURL, function(data) {
+			lhsData = data;
+			onSuccess();
+		}, "text")
+			.fail(function() {
+				onError();
+			});
+		
+		$.get(rhsFileURL, function(data) {
+			rhsData = data;
+			onSuccess();
+		}, "text")
+			.fail(function() {
+				onError();
+			});
+	} else {
+		scrollEditor();
+	}
 };
 
 var initPartitionTree = function() {
@@ -97,12 +102,11 @@ var initPartitionTree = function() {
 		var node = selected.node;
 		
 		if (node.text.endsWith(".java")) {
-			setEditorContent(parentNode.original.before_file, parentNode.original.after_file);
+			setEditorContent(node.original.before_file, node.original.after_file);
 		}
 		
 		if (node.text.endsWith("]")) {
 			var parentNode = $('#partition_tree').jstree(true).get_node(node.parent);
-			//~ TODO check if current file is different that parentNode file before changing
 			setEditorContent(parentNode.original.before_file, parentNode.original.after_file,
 				node.original.line_start);
 		}

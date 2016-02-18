@@ -133,6 +133,10 @@ header h1 {
 	box-sizing: border-box;
 }
 
+#filepath_bar {
+	
+}
+
 #code_editor_div {
 	float: left;
 	width: 75%;
