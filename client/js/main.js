@@ -1,29 +1,42 @@
 var displayMessageBox = function(text) {
 	$('#msgbox_text').text(text);
 	$('#msgbox_div').css('display', 'flex');
-}
+};
 
 var computeMainWindowHeight = function() {
 	return $(document.body).outerHeight(true) - $('header').outerHeight(true);
 };
 
-var computeCodeEditorWidth = function() {
+var computeCodeEditorMaxWidth = function() {
 	return $('#main_div').outerWidth(true) - $('#partition_tree_div').outerWidth(true) - 1;
-}
+};
+
+var computeCodeEditorMaxHeight = function() {
+	return computeMainWindowHeight() - $('#filepath_bar').outerHeight(true);
+};
+
+var computeCodeEditorCurrentWidth = function() {
+	var editorWidth = 0;
+	$('#code_editor > div').each(function() {
+		editorWidth += $(this).outerWidth(true);
+	});
+	return editorWidth;
+};
 
 var resizeDivs = function() {
 	$('#main_div').width($(document.body).outerWidth(true));
 	$('#main_div').height(computeMainWindowHeight());
-	$('#code_editor_div').width(computeCodeEditorWidth());
-	$('#code_editor_div').height(computeMainWindowHeight());
+	$('#code_editor_div').width(computeCodeEditorMaxWidth());
+	$('#code_editor_div').height(computeCodeEditorMaxHeight());
 }
 
 var onResize = function() {
 	resizeDivs();
 	// Mergely should update the height of CodeMirror lib but it doesn't
-	$('.CodeMirror').css({'height' : computeMainWindowHeight(), 
-		'width' : (computeCodeEditorWidth() / 2 - 50) + 'px'});
+	$('.CodeMirror').css({'height' : computeCodeEditorMaxHeight(), 
+		'width' : (computeCodeEditorMaxWidth() / 2 - 50) + 'px'});
 	$('#code_editor').mergely('resize');
+	$('#filepath_bar').outerWidth(computeCodeEditorCurrentWidth() - 1);
 };
 
 var clearTree = function() {
@@ -116,14 +129,14 @@ var initPartitionTree = function() {
 var initCodeEditor = function() {
 	$('#code_editor').mergely({
 		cmsettings: { readOnly: true, lineNumbers: true },
-		editor_height: 'auto', //~ computeMainWindowHeight() + 'px',
+		editor_height: 'auto',
 		editor_width: 'auto',
 		height: function(h) {
-			return computeMainWindowHeight();
+			return computeCodeEditorMaxHeight();
 		},
 		width: function(w) {
 			//~ $('#code_editor').css({'display': 'inline-block', 'float': 'left', 'clear': 'none'});
-			return computeCodeEditorWidth();
+			return computeCodeEditorMaxWidth();
 		}
 	});
 };
