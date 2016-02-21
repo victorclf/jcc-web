@@ -141,6 +141,7 @@ header h1 {
 	padding: 1px 5px;
 	background-color: #f7f7f7;
 	border: 1px solid #ddd;
+	font-size: 1.05em;
 }
 
 #code_editor_div {

@@ -1,3 +1,24 @@
+var pathBar = function() {
+	var separator = '/files/';
+	var realPath = '';
+		
+	return {
+		getRealPath: function() {
+			return realPath;
+		},
+		getUserPath: function() {
+			return $('#filepath_bar').val();
+		},
+		setPath: function(p) {
+			realPath = p;
+			var separatorIndex = realPath.search(separator);
+			$('#filepath_bar').val(separatorIndex !== - 1
+				? realPath.slice(separatorIndex + separator.length)
+				: realPath);
+		}
+	}
+}();
+
 var displayMessageBox = function(text) {
 	$('#msgbox_text').text(text);
 	$('#msgbox_div').css('display', 'flex');
@@ -68,7 +89,7 @@ var setEditorContent = function(lhsFileURL, rhsFileURL, scrollToLine) {
 			$('#code_editor').mergely('clear', 'rhs');
 			$('#code_editor').mergely('lhs', lhsData);
 			$('#code_editor').mergely('rhs', rhsData);
-			$('#filepath_bar').val(rhsFileURL);
+			pathBar.setPath(rhsFileURL);
 			setTimeout(scrollEditor, 200);
 		}
 	};
@@ -79,7 +100,7 @@ var setEditorContent = function(lhsFileURL, rhsFileURL, scrollToLine) {
 		$('#code_editor').mergely('rhs', errorMsg);
 	};
 	
-	if ($('#filepath_bar').val() !== rhsFileURL) {
+	if (pathBar.getRealPath() !== rhsFileURL) {
 		$.get(lhsFileURL, function(data) {
 			lhsData = data;
 			onSuccess();
