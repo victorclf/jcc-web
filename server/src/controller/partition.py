@@ -164,7 +164,7 @@ class PartitionController(object):
                 fNode.before_file = os.path.join(baseFilePath, f + '.old')
                 fNode.after_file = os.path.join(baseFilePath, f)
                 fNode.children = []
-                for d in diffs:
+                for d in sorted(diffs, key=lambda x: x.lineSpan[0]):
                     dNode = util.Object()
                     dNode.text = '[+%d:%d]' % d.lineSpan
                     dNode.line_start = d.lineSpan[0]
