@@ -143,7 +143,8 @@ class PartitionController(object):
         partitionsSortedByTrivial = sorted(partitions.values(), key=lambda x : x.isTrivial)        
         for p in partitionsSortedByTrivial:
             pNode = util.Object()
-            pNode.text = "%s Partition %d" % (("Trivial" if p.isTrivial else "Non-Trivial"), p.id)
+            pNode.text = "%s Partition %d" % (("Trivial" if p.isTrivial else "Non-Trivial"), 
+                                              (numTrivialPartitions + 1 if p.isTrivial else numNonTrivialPartitions + 1))
             pNode.children = []
             
             if p.isTrivial:
