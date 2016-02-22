@@ -60,14 +60,16 @@ var onResize = function() {
 	$('#filepath_bar').outerWidth(computeCodeEditorCurrentWidth() - 1);
 };
 
-var clearTree = function() {
-	$('#partition_tree').jstree(true).settings.core.data = ['No pull request selected.'];
+var clearTree = function(message) {
+	$('#partition_tree').jstree(true).settings.core.data = [message ? message : 'No pull request selected.'];
 	$('#partition_tree').jstree(true).refresh();
 };
 
 var clearEditor = function() {
 	$('#code_editor').mergely('lhs', '');
 	$('#code_editor').mergely('rhs', '');
+	pathBar.setPath('');
+	
 };
 
 var setEditorContent = function(lhsFileURL, rhsFileURL, scrollToLine) {
@@ -162,6 +164,66 @@ var initCodeEditor = function() {
 	});
 };
 
+var gitHubURLToJCCURL = function(ghURL) {
+	// https://github.com/<projectOwner>/<project>/pull/<pullRequestId>
+	var parsedURL = parseURL(ghURL);
+	// '', projectOwner, projectName, 'pull', pullRequestId
+	var paths = parsedURL.pathname.split('/');
+	projectOwner = paths[1];
+	projectName = paths[2];
+	pullRequestId = parseInt(paths[4], 10);
+	
+	if (paths[0] !== '' || paths[3] !== 'pull' || pullRequestId === NaN) {
+		throw { name: 'InvalidGitHubPullRequestURLException' };
+	}
+	
+	return '/pulls/' + projectOwner + '/' + projectName + '/' + pullRequestId + '/';
+};
+
+var jccURLToGitHubURL = function(jccURL) {
+	var parsedURL = parseURL(jccURL);
+	// '', 'pulls', projectOwner, projectName, pullRequestId
+	var paths = parsedURL.pathname.split('/');
+	projectOwner = paths[2];
+	projectName = paths[3];
+	pullRequestId = parseInt(paths[4], 10);
+	
+	if (paths[0] !== '' || paths[1] !== 'pulls' || pullRequestId === NaN) {
+		throw { name: 'InvalidJCCPullRequestURLException' };
+	}
+	
+	return 'https://github.com/' + projectOwner + '/' + projectName + '/pull/' + pullRequestId;
+};
+
+var partitionPullRequest = function() {
+	var url = $('#pull_request_url_input').val();
+	
+	var pullURL;
+	try {
+		pullURL = gitHubURLToJCCURL(url);
+	} catch(e) {
+		displayMessageBox('Invalid URL. The URL of the pull request must follow the format: https://github.com/ORGANIZATION/PROJECT/pull/X');
+		return;
+	}
+	
+	clearEditor();
+	
+	var partitionsURL = pullURL + 'partitions/';
+	$('#partition_tree').jstree(true).settings.core.data = {
+				"url" : partitionsURL,
+				"dataType" : "json",
+				"error": function(jqXHR, textStatus, errorThrown) { 
+					displayMessageBox(jqXHR.responseText);
+					clearTree();
+				}
+	};
+	$('#partition_tree').jstree(true).refresh();
+	
+	if (window.location.pathname !== pullURL) {
+		window.history.pushState(null, '', pullURL);
+	}
+};
+
 var initHeaderButtons = function() {
 	$('#pull_request_url_input').keyup(function(event) {
 		if(event.keyCode == 13) { // Enter/Return key
@@ -169,33 +231,7 @@ var initHeaderButtons = function() {
 		}
 	});
 	
-	$('#partition_button').click(function() {
-		var url = $('#pull_request_url_input').val();
-		var parsedURL = parseURL(url);
-		// '', projectOwner, projectName, 'pull', pullRequestId
-		var paths = parsedURL.pathname.split('/'); 
-		var projectOwner = paths[1];
-		var projectName = paths[2];
-		var pullRequestId = parseInt(paths[4], 10);
-		
-		if (paths[0] !== '' || paths[3] !== 'pull' || paths[4] === NaN) {
-			displayMessageBox('Invalid URL. The URL of the pull request must follow the format: https://github.com/ORGANIZATION/PROJECT/pull/X');
-			return;
-		}
-		
-		clearEditor();
-		
-		var partitionsUrl = './pulls/' + projectOwner + '/' + projectName + '/' + pullRequestId + '/partitions/';
-		$('#partition_tree').jstree(true).settings.core.data = {
-					"url" : partitionsUrl,
-					"dataType" : "json",
-					"error": function(jqXHR, textStatus, errorThrown) { 
-						displayMessageBox(jqXHR.responseText);
-						clearTree();
-					}
-		};
-		$('#partition_tree').jstree(true).refresh();
-	});
+	$('#partition_button').click(partitionPullRequest);
 	
 	$('#menu_button').click(function() {
 		if ($('#about_div').is(":hidden")) {
@@ -204,13 +240,13 @@ var initHeaderButtons = function() {
 			$('#about_div').slideUp("fast");
 		}
 	});
-}
+};
 
 var initAboutBox = function() {
 	$('#about_close_button').click(function() {
 		$('#about_div').slideUp("fast");
 	});
-}
+};
 
 var initMessageBox = function() {
 	var msgBoxCloseHandler = function(e) {
@@ -229,7 +265,7 @@ var initMessageBox = function() {
 	$(document).ajaxError(function(event, jqXHR, settings, thrownError) {
 		displayMessageBox(jqXHR.responseText);
 	});
-}
+};
 
 var initWaitCursorCallbacks = function() {
 	$(document).ajaxStart(function() {
@@ -238,21 +274,31 @@ var initWaitCursorCallbacks = function() {
 	$(document).ajaxStop(function() {
 		$('html').removeClass('waitCursor');
 	});
-}
+};
 
 var parseURL = function(url) {
 	var parser = document.createElement('a');
 	parser.href = url;
 	return parser;
-	//~ Given "http://example.com:3000/pathname/?search=test#hash"
-	//~ parser.protocol; // => "http:"
-	//~ parser.hostname; // => "example.com"
-	//~ parser.port;     // => "3000"
-	//~ parser.pathname; // => "/pathname/"
-	//~ parser.search;   // => "?search=test"
-	//~ parser.hash;     // => "#hash"
-	//~ parser.host;     // => "example.com:3000"
-}
+	// Given "http://example.com:3000/pathname/?search=test#hash"
+	// parser.protocol; // => "http:"
+	// parser.hostname; // => "example.com"
+	// parser.port;     // => "3000"
+	// parser.pathname; // => "/pathname/"
+	// parser.search;   // => "?search=test"
+	// parser.hash;     // => "#hash"
+	// parser.host;     // => "example.com:3000"
+};
+
+var handleURLState = function() {
+	// If a pull request is in the URL, update pull url path bar and partition it.
+	if (window.location.pathname !== '/') {
+		$('#pull_request_url_input').val(jccURLToGitHubURL(window.location.pathname));
+		$('#partition_button').click();
+		//~ FIXME Loading message is not shown automatically when clicking the button here programatically
+		clearTree('Loading...');
+	}
+};
 
 $(document).ready(function() {
 	resizeDivs();
@@ -263,6 +309,7 @@ $(document).ready(function() {
 	initMessageBox();
 	initWaitCursorCallbacks();
 	$(window).trigger('resize');
+	handleURLState();
 });
 
 $(window).resize(onResize);

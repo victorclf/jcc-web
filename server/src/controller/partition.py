@@ -161,7 +161,7 @@ class PartitionController(object):
             for (f, diffs) in diffsOfFile.iteritems():
                 fNode = util.Object()
                 fNode.text = os.path.basename(f)
-                baseFilePath = './pulls/%s/%d/files' % (projectId, pullRequestId)
+                baseFilePath = 'files'
                 fNode.before_file = os.path.join(baseFilePath, f + '.old')
                 fNode.after_file = os.path.join(baseFilePath, f)
                 fNode.children = []

@@ -44,9 +44,11 @@ class PullRequestResource(object):
     '''
     ./pulls/<projectOwner>/<projectName>/<pullId>/
     '''
-#     @cherrypy.expose
-#     def index(self, projectOwner, projectName, pullRequestId):
-#         return 'Pull Request %s from %s/%s' % (pullRequestId, projectOwner, projectName)
+    @cherrypy.expose
+    @cherrypy.tools.accept(media='text/html')
+    def index(self, projectOwner, projectName, pullRequestId):
+        indexPagePath = os.path.join(STATIC_DIR_ROOT, 'index.html')
+        return serve_file(indexPagePath)
     
 
 class PartitionResource(object):
