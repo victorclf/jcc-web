@@ -1,5 +1,5 @@
 var pathBar = function() {
-	var separator = '/files/';
+	var separator = 'files/';
 	var realPath = '';
 		
 	return {
@@ -86,7 +86,7 @@ var setEditorContent = function(lhsFileURL, rhsFileURL, scrollToLine) {
 	
 	var onSuccess = function() {
 		// Barrier synchronizing both AJAX calls.
-		if (lhsData && rhsData) {
+		if (lhsData !== undefined && rhsData !== undefined) {
 			$('#code_editor').mergely('clear', 'lhs');
 			$('#code_editor').mergely('clear', 'rhs');
 			$('#code_editor').mergely('lhs', lhsData);

@@ -67,8 +67,7 @@ class PartitionResource(object):
         projectId = '/'.join((projectOwner, projectName))
         try:
             pullRequestDownloaded = self.partitionController.downloadPullRequestFromGitHub(projectId, pullRequestId)
-            if pullRequestDownloaded:
-                self.partitionController.partitionPullRequest(projectId, pullRequestId)
+            self.partitionController.partitionPullRequest(projectId, pullRequestId)
             partitionsJSON = self.partitionController.getPartitionJSON(projectId, pullRequestId)
             return partitionsJSON;
         except Exception as e:

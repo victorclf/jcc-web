@@ -7,6 +7,9 @@ GITHUB_CREDENTIALS_FILE_PATH = os.path.join(os.path.expanduser("~"), '.pullReque
 PULL_REQUESTS_PATH = os.path.abspath(os.path.join(os.getcwd(), './pulls'))
 PULL_CACHE_INFO_FILENAME = '.pull-cache-info'
 JCC_PATH = os.path.abspath(os.path.join(os.getcwd(), '../../../ccjava/ccjava-plugin/build/eclipse/eclipse'))
+JCC_ARGS = '-consoleLog -nosplash --launcher.suppressErrors -vmargs -Xms40m -Xmx1024m'
+JCC_LOG_STDOUT = 'jcc-stdout.log'
+JCC_LOG_STDERR = 'jcc-stderr.log'
 PARTITION_RESULTS_FOLDER_NAME = 'ccjava-results'
 PARTITION_RESULTS_FILENAME = 'partitions.csv'
 

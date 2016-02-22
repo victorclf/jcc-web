@@ -76,8 +76,18 @@ class PartitionController(object):
     def partitionPullRequest(self, projectId, pullRequestId):
         pullRequestId = self._parsePullRequestId(pullRequestId)
         pullPath = self._getPullRequestPath(projectId, pullRequestId)
-        os.system('%s %s 1>tmp.out 2>tmp.err' % (options.JCC_PATH, pullPath))
         resultsPath = os.path.join(pullPath, options.PARTITION_RESULTS_FOLDER_NAME)
+        partitioningFilePath = os.path.join(resultsPath, options.PARTITION_RESULTS_FILENAME)
+        
+        if os.path.exists(partitioningFilePath):
+            return
+        
+        os.system('%s %s %s 1>%s 2>%s' % (options.JCC_PATH, 
+                                              pullPath,
+                                              options.JCC_ARGS, 
+                                              os.path.join(pullPath, options.JCC_LOG_STDOUT),
+                                              os.path.join(pullPath, options.JCC_LOG_STDERR)))
+        
         if not os.path.exists(resultsPath):
             raise FailedToPartitionPullRequestException()
         
