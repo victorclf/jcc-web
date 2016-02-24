@@ -21,7 +21,9 @@ var pathBar = function() {
 			var userPath = separatorIndex !== - 1
 				? _realPath.slice(separatorIndex + _SEPARATOR.length)
 				: _realPath;
-			userPath += ' (' + _partitionName + ')';
+			if (userPath) {
+				userPath += ' (' + _partitionName + ')';
+			}
 			$('#filepath_bar').val(userPath);
 		}
 	}
