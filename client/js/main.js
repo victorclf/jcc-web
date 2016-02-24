@@ -1,24 +1,96 @@
+// Singletons
 var pathBar = function() {
-	var separator = 'files/';
-	var realPath = '';
+	var _SEPARATOR = 'files/';
+	var _realPath = '';
+	var _partitionName = '';
 		
 	return {
 		getRealPath: function() {
-			return realPath;
+			return _realPath;
 		},
 		getUserPath: function() {
 			return $('#filepath_bar').val();
 		},
-		setPath: function(p) {
-			realPath = p;
-			var separatorIndex = realPath.search(separator);
-			$('#filepath_bar').val(separatorIndex !== - 1
-				? realPath.slice(separatorIndex + separator.length)
-				: realPath);
+		getPartitionName: function() {
+			return _partitionName;
+		},
+		setPath: function(realPath, partitionName) {
+			_realPath = realPath;
+			_partitionName = partitionName;
+			var separatorIndex = _realPath.search(_SEPARATOR);
+			var userPath = separatorIndex !== - 1
+				? _realPath.slice(separatorIndex + _SEPARATOR.length)
+				: _realPath;
+			userPath += ' (' + _partitionName + ')';
+			$('#filepath_bar').val(userPath);
 		}
 	}
 }();
 
+var diffRegionHighlighter = function() {
+	var _diffRegions = '';
+	var _selectedDiffRegion = '';
+	
+	return {
+		clear: function() {
+			_diffRegions = null;
+			_selectedDiffRegion = null;
+		},
+		setDiffRegions: function(diffRegions) {
+			// Assumes that whole document is reloaded when diff-regions 
+			// to highlight are changed.
+			_diffRegions = diffRegions;
+			_selectedDiffRegion = null;
+		},
+		setSelectedDiffRegion: function(selectedDiffRegion) {
+			// Assumes that the whole document is not reloaded when
+			// selected diff-region change.
+			var rhsCm = $('#code_editor').mergely('cm', 'rhs');
+			if (_selectedDiffRegion) {
+				for (var j = _selectedDiffRegion[0]; j <= _selectedDiffRegion[1]; ++j) {
+					var lineId = j - 1;
+					rhsCm.removeLineClass(lineId, 'background', 'diffSelected');
+				}
+			}
+			
+			_selectedDiffRegion = selectedDiffRegion;
+			
+			if (_selectedDiffRegion) {
+				for (var j = _selectedDiffRegion[0]; j <= _selectedDiffRegion[1]; ++j) {
+					var lineId = j - 1;
+					rhsCm.addLineClass(lineId, 'background', 'diffSelected');
+				}
+			}
+		},
+		highlight: function() {
+			var rhsCm = $('#code_editor').mergely('cm', 'rhs');
+			
+			if (_diffRegions) {
+				var lastDiffLineId = -1;
+				for (var i = 0; i < _diffRegions.length; ++i) {
+					var diffRegion = _diffRegions[i];
+					for (var j = diffRegion[0]; j <= diffRegion[1]; ++j) {
+						var lineId = j - 1;
+						rhsCm.addLineClass(lineId, 'background', 'diffFromSelectedPartition');
+						// Use a thin border to separate adjacent diff-regions.
+						if (lineId !== 0 && lineId === lastDiffLineId + 1) {
+							rhsCm.addLineClass(lineId, 'background', 'diffFromSelectedPartitionSplit');
+						}
+					}
+					lastDiffLineId = lineId;
+				}
+			}
+			
+			if (_selectedDiffRegion) {
+				
+			}
+		}
+	}
+}();
+
+
+
+// Functions
 var displayMessageBox = function(text) {
 	$('#msgbox_text').text(text);
 	$('#msgbox_div').css('display', 'flex');
@@ -58,6 +130,7 @@ var onResize = function() {
 		'width' : (computeCodeEditorMaxWidth() / 2 - 50) + 'px'});
 	$('#code_editor').mergely('resize');
 	$('#filepath_bar').outerWidth(computeCodeEditorCurrentWidth() - 1);
+	setTimeout(diffRegionHighlighter.highlight, 3000);
 };
 
 var clearTree = function(message) {
@@ -68,16 +141,16 @@ var clearTree = function(message) {
 var clearEditor = function() {
 	$('#code_editor').mergely('lhs', '');
 	$('#code_editor').mergely('rhs', '');
-	pathBar.setPath('');
-	
+	pathBar.setPath('', '');
+	diffRegionHighlighter.clear();
 };
 
-var setEditorContent = function(lhsFileURL, rhsFileURL, scrollToLine) {
+var setEditorContent = function(lhsFileURL, rhsFileURL, partitionName, diffRegions, selectedDiffRegion, scrollToLine) {
 	var lhsData, 
 		rhsData;
-		
+	
 	var scrollEditor = function() {
-		if (scrollToLine !== undefined) {
+		if (scrollToLine) {
 			$('#code_editor').mergely('cm', 'rhs')
 				.scrollIntoView({line: scrollToLine, ch: 0}, 
 								Math.floor($('#code_editor_div').height() / 2));
@@ -91,8 +164,11 @@ var setEditorContent = function(lhsFileURL, rhsFileURL, scrollToLine) {
 			$('#code_editor').mergely('clear', 'rhs');
 			$('#code_editor').mergely('lhs', lhsData);
 			$('#code_editor').mergely('rhs', rhsData);
-			pathBar.setPath(rhsFileURL);
-			setTimeout(scrollEditor, 200);
+			pathBar.setPath(rhsFileURL, partitionName);
+			diffRegionHighlighter.setDiffRegions(diffRegions);
+			diffRegionHighlighter.setSelectedDiffRegion(selectedDiffRegion);
+			setTimeout(diffRegionHighlighter.highlight, 200);
+			setTimeout(scrollEditor, 50);
 		}
 	};
 	
@@ -102,7 +178,8 @@ var setEditorContent = function(lhsFileURL, rhsFileURL, scrollToLine) {
 		$('#code_editor').mergely('rhs', errorMsg);
 	};
 	
-	if (pathBar.getRealPath() !== rhsFileURL) {
+	if (pathBar.getPartitionName() !== partitionName 
+		|| pathBar.getRealPath() !== rhsFileURL) {
 		$.get(lhsFileURL, function(data) {
 			lhsData = data;
 			onSuccess();
@@ -119,6 +196,8 @@ var setEditorContent = function(lhsFileURL, rhsFileURL, scrollToLine) {
 				onError();
 			});
 	} else {
+		diffRegionHighlighter.setSelectedDiffRegion(selectedDiffRegion);
+		diffRegionHighlighter.highlight();
 		scrollEditor();
 	}
 };
@@ -130,21 +209,28 @@ var initPartitionTree = function() {
 		}
 	});
 	
-	$('#partition_tree').on("loaded.jstree", function() {
-		$('#partition_tree').jstree().open_all();
-	});
-	
 	$('#partition_tree').on("select_node.jstree", function(node, selected, event) {
 		var node = selected.node;
-		
-		if (node.text.endsWith(".java")) {
-			setEditorContent(node.original.before_file, node.original.after_file);
-		}
+		var selectedDiffRegion;
+		var scrollToLine;
 		
 		if (node.text.endsWith("]")) {
-			var parentNode = $('#partition_tree').jstree(true).get_node(node.parent);
-			setEditorContent(parentNode.original.before_file, parentNode.original.after_file,
-				node.original.line_start);
+			scrollToLine = node.original.line_start;
+			selectedDiffRegion = [node.original.line_start, node.original.line_end];
+			node = $('#partition_tree').jstree(true).get_node(node.parent);
+		}
+		
+		if (node.text.endsWith(".java")) {
+			var partitionName = $('#partition_tree').jstree(true).get_node(node.parent).text;
+			
+			var diffRegions = [];
+			for (var i = 0; i < node.children.length; ++i) {
+				var childIndex = node.children[i];
+				var childNode = $('#partition_tree').jstree(true).get_node(childIndex);
+				diffRegions.push([childNode.original.line_start, childNode.original.line_end]);
+			}
+			
+			setEditorContent(node.original.before_file, node.original.after_file, partitionName, diffRegions, selectedDiffRegion, scrollToLine);
 		}
 	});
 };
@@ -160,6 +246,9 @@ var initCodeEditor = function() {
 		width: function(w) {
 			//~ $('#code_editor').css({'display': 'inline-block', 'float': 'left', 'clear': 'none'});
 			return computeCodeEditorMaxWidth();
+		},
+		resized: function() {
+			diffRegionHighlighter.highlight();
 		}
 	});
 };

@@ -17,24 +17,38 @@
 .mergely-column { border: 1px solid #ccc; }
 .mergely-active { border: 1px solid #a3d1ff; }
 
+/*
 .mergely.a.rhs.start { border-top: 1px solid #a3d1ff; }
 .mergely.a.lhs.start.end,
 .mergely.a.rhs.end { border-bottom: 1px solid #a3d1ff; }
-.mergely.a.rhs { background-color: #ddeeff; }
+*/
+.mergely.a.rhs ~ pre > span { background-color: #ddeeff; color: #0002ca; }
+/*
 .mergely.a.lhs.start.end.first { border-bottom: 0; border-top: 1px solid #a3d1ff; }
+*/
 
 .mergely.d.lhs { background-color: #edc0c0; }
 .mergely.d.lhs.end,
+/*
 .mergely.d.rhs.start.end { border-bottom: 1px solid #ff7f7f; }
 .mergely.d.rhs.start.end.first { border-bottom: 0; border-top: 1px solid #ff7f7f; }
 .mergely.d.lhs.start { border-top: 1px solid #ff7f7f; }
+*/
 
 .mergely.c.lhs,
-.mergely.c.rhs { background-color: #fafafa; }
+.mergely.c.rhs { }
+/*
 .mergely.c.lhs.start,
 .mergely.c.rhs.start { border-top: 1px solid #a3a3a3; }
+*/
+/*
 .mergely.c.lhs.end,
 .mergely.c.rhs.end { border-bottom: 1px solid #a3a3a3; }
+*/
 
-.mergely.ch.a.rhs { background-color: #ddeeff; }
+.mergely.ch.a.rhs { background-color: #ddeeff; color: #0002ca; }
 .mergely.ch.d.lhs { background-color: #edc0c0; text-decoration: line-through; color: #888; }
+
+.diffFromSelectedPartition { background-color: #d0f0d0; }
+.diffFromSelectedPartitionSplit { border-top: 1px dashed #606060; }
+.diffSelected { background-color: #a0ffa0; }
