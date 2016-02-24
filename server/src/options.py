@@ -15,6 +15,7 @@ PARTITION_RESULTS_FOLDER_NAME = 'ccjava-results'
 PARTITION_RESULTS_FILENAME = 'partitions.csv'
 
 # Misc
+SERVER_PORT = 8080
 MAX_DOWNLOAD_RETRIES = 3
 
 
@@ -38,6 +39,6 @@ def loadOptionsFromDisk():
 		optVars = readOptionsFromFile(OPTIONS_LOCAL_PATH)
 		module = sys.modules[__name__]
 		for optName, optVal in optVars.iteritems():
-			setattr(module, name, value)
-    
+			setattr(module, optName, optVal)
+
 loadOptionsFromDisk()

@@ -102,6 +102,7 @@ def main():
     conf = {
          '/': {
              'tools.staticdir.root': STATIC_DIR_ROOT,
+             'tools.secureheaders.on': True,
          },
         '/js' : {
              'tools.staticdir.on': True,
@@ -128,7 +129,17 @@ def main():
     def error_page_default(status, message, traceback, version):
         return message
     cherrypy.config.update({'error_page.default': error_page_default})
+
+    def secureheaders():
+        headers = cherrypy.response.headers
+        headers['X-Frame-Options'] = 'DENY'
+        headers['X-XSS-Protection'] = '1; mode=block'
+        headers['Content-Security-Policy'] = "default-src='self'"
+    cherrypy.tools.secureheaders = cherrypy.Tool('before_finalize', secureheaders, priority=60)
     
+    cherrypy.server.socket_host = '0.0.0.0'
+    cherrypy.config.update({'server.socket_host': '0.0.0.0', 
+                            'server.socket_port': options.SERVER_PORT, })
     cherrypy.quickstart(MainResource(), '/', conf)
 
 
