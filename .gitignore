@@ -17,9 +17,11 @@ unversioned/*
 
 # Temp files
 *.pyc
+*.local
 server/src/workspace/*
 server/src/pulls/*
 server/test/pulls/*
 server/test/workspace/*
+server/test/.cache/*
 tmp.err
 tmp.out

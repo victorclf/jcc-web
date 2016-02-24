@@ -1,3 +1,3 @@
-#!/usr/bin/env python
+#!/bin/sh
 
 find . -iname "*.pyc" -exec rm {} \;

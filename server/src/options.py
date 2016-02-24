@@ -1,4 +1,5 @@
 import os
+import sys
 
 # GitHub
 GITHUB_CREDENTIALS_FILE_PATH = os.path.join(os.path.expanduser("~"), '.pullRequestMinerrc') 
@@ -17,6 +18,26 @@ PARTITION_RESULTS_FILENAME = 'partitions.csv'
 MAX_DOWNLOAD_RETRIES = 3
 
 
+def readOptionsFromFile(filePath):
+	optVars = {}
+	with open(filePath) as fin:
+		for l in fin.readlines():
+			l = l.strip()
+			if l.startswith('#'):
+				continue
+			splitL = l.split('=', 1)
+			if len(splitL) != 2:
+				continue
+			name, val = [s.strip(' "\'') for s in splitL]
+			optVars[name] = val
+	return optVars
 
 def loadOptionsFromDisk():
-    pass
+	OPTIONS_LOCAL_PATH = 'options.local'
+	if os.path.exists(OPTIONS_LOCAL_PATH):
+		optVars = readOptionsFromFile(OPTIONS_LOCAL_PATH)
+		module = sys.modules[__name__]
+		for optName, optVal in optVars.iteritems():
+			setattr(module, name, value)
+    
+loadOptionsFromDisk()
