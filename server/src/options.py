@@ -30,6 +30,10 @@ def readOptionsFromFile(filePath):
 			if len(splitL) != 2:
 				continue
 			name, val = [s.strip(' "\'') for s in splitL]
+			try: 
+				val = int(val) #if it is an integer, convert to int
+			except ValueError:
+				pass 
 			optVars[name] = val
 	return optVars
 
