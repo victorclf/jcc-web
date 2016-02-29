@@ -1,4 +1,7 @@
+#!/usr/bin/env python
+
 import os
+import argparse
 import cherrypy
 from cherrypy.lib.static import serve_file
 
@@ -98,7 +101,21 @@ class PullRequestFilesResource(object):
             mapToWebException(e)
 
 
+
+def parseArgs():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--daemon', action="store_true", help="run as a daemon")
+    return parser.parse_args()
+
+
 def main():
+    args = parseArgs()
+    if args.daemon:    
+        d = cherrypy.process.plugins.Daemonizer(cherrypy.engine,
+                                               stdout=os.path.join(os.path.expanduser("~"), 'jccweb-out.log'), 
+                                               stderr=os.path.join(os.path.expanduser("~"), 'jccweb-err.log'))
+        d.subscribe()
+    
     conf = {
          '/': {
              'tools.staticdir.root': STATIC_DIR_ROOT,
@@ -140,7 +157,11 @@ def main():
     cherrypy.server.socket_host = '0.0.0.0'
     cherrypy.config.update({'server.socket_host': '0.0.0.0', 
                             'server.socket_port': options.SERVER_PORT, })
-    cherrypy.quickstart(MainResource(), '/', conf)
+    cherrypy.tree.mount(MainResource(), '/', conf)
+    
+    cherrypy.engine.start()
+    cherrypy.engine.block()
+
 
 
 if __name__ == '__main__':
