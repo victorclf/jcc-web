@@ -105,6 +105,7 @@ class PullRequestFilesResource(object):
 def parseArgs():
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--daemon', action="store_true", help="run as a daemon")
+    parser.add_argument('-p', '--dropPrivileges', action="store_true", help="after starting server, change user from root to another with less privileges")
     return parser.parse_args()
 
 
@@ -115,6 +116,9 @@ def main():
                                                stdout=os.path.join(os.path.expanduser("~"), 'jccweb-out.log'), 
                                                stderr=os.path.join(os.path.expanduser("~"), 'jccweb-err.log'))
         d.subscribe()
+    if args.dropPrivileges:
+        p = cherrypy.process.plugins.DropPrivileges(cherrypy.engine, uid=options.DROP_PRIVILEGES_UID, gid=options.DROP_PRIVILEGES_GID)
+        p.subscribe()
     
     conf = {
          '/': {
