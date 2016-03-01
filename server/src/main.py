@@ -117,7 +117,8 @@ def main():
                                                stderr=os.path.join(os.path.expanduser("~"), 'jccweb-err.log'))
         d.subscribe()
     if args.dropPrivileges:
-        p = cherrypy.process.plugins.DropPrivileges(cherrypy.engine, uid=options.DROP_PRIVILEGES_UID, gid=options.DROP_PRIVILEGES_GID)
+        p = cherrypy.process.plugins.DropPrivileges(cherrypy.engine, umask=options.DROP_PRIVILEGES_UMASK, 
+                                                    uid=options.DROP_PRIVILEGES_UID, gid=options.DROP_PRIVILEGES_GID)
         p.subscribe()
     
     conf = {
