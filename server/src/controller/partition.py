@@ -43,6 +43,7 @@ class SetLock(object):
 class PartitionController(object):
     _PROJECT_ID_REGEX = re.compile('[A-Za-z0-9-_]+$')
     _LOCKED_PULLS = SetLock()
+    _PARTITIONER_LOCK = threading.RLock()
         
     def __init__(self):
         self.__gitHubInterface = None
@@ -122,11 +123,13 @@ class PartitionController(object):
         if os.path.exists(partitioningFilePath):
             return
         
-        os.system('%s %s %s 1>%s 2>%s' % (options.JCC_PATH, 
-                                              pullPath,
-                                              options.JCC_ARGS, 
-                                              os.path.join(pullPath, options.JCC_LOG_STDOUT),
-                                              os.path.join(pullPath, options.JCC_LOG_STDERR)))
+        with self._PARTITIONER_LOCK:
+            shutil.rmtree(options.JCC_WORKSPACE_PATH, True) #Temp workspace files slow down the app
+            os.system('%s %s %s 1>%s 2>%s' % (options.JCC_PATH, 
+                                                  pullPath,
+                                                  options.JCC_ARGS % options.JCC_WORKSPACE_PATH, 
+                                                  os.path.join(pullPath, options.JCC_LOG_STDOUT),
+                                                  os.path.join(pullPath, options.JCC_LOG_STDERR)))
         
         if not os.path.exists(resultsPath):
             raise FailedToPartitionPullRequestException()
