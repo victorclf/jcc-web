@@ -4,6 +4,7 @@ import urllib
 import codecs
 import csv
 import re
+import threading
 
 import cherrypy
 import github
@@ -14,7 +15,6 @@ import util
 from model.diff_region import DiffRegion
 from model.partition import Partition
 
-
 class GitHubCredentialsFileNotFoundException(Exception): pass
 class InvalidProjectIdException(Exception): pass
 class InvalidPullRequestIdException(Exception): pass
@@ -22,10 +22,28 @@ class FailedToDownloadPullRequestException(util.RichException): pass
 class FailedToPartitionPullRequestException(util.RichException): pass
 class InvalidRelativeFilePathException(util.RichException): pass
 
+class SetLock(object):
+    def __init__(self):
+        self._set = set()
+        self._lock = threading.Condition(threading.RLock())
+    
+    def acquire(self, oid):
+        with self._lock:
+            while oid in self._set:
+                self._lock.wait(30.0)
+            self._set.add(oid)
+    
+    def release(self, oid):
+        with self._lock:
+            self._set.remove(oid)
+            self._lock.notifyAll()
+            
+            
 
 class PartitionController(object):
     _PROJECT_ID_REGEX = re.compile('[A-Za-z0-9-_]+$')
-    
+    _LOCKED_PULLS = SetLock()
+        
     def __init__(self):
         self.__gitHubInterface = None
     
@@ -46,13 +64,20 @@ class PartitionController(object):
     def getPartitionJSON(self, projectOwner, projectName, pullRequestId):
         projectId = self._parseProjectId(projectOwner, projectName)
         pullRequestId = self._parsePullRequestId(pullRequestId)
-        
-        self._downloadPullRequestFromGitHub(projectId, pullRequestId)
-        self._partitionPullRequest(projectId, pullRequestId)
-        
-        pullPath = self._getPullRequestPath(projectId, pullRequestId)
-        resultsPath = os.path.join(pullPath, options.PARTITION_RESULTS_FOLDER_NAME, options.PARTITION_RESULTS_FILENAME)
-        partitions = self._partitionsFromCSV(resultsPath)
+        fullPullRequestId = self._getFullPullRequestId(projectId, pullRequestId)
+
+        try:
+            self._LOCKED_PULLS.acquire(fullPullRequestId)
+                
+            self._downloadPullRequestFromGitHub(projectId, pullRequestId)
+            self._partitionPullRequest(projectId, pullRequestId)
+            
+            pullPath = self._getPullRequestPath(projectId, pullRequestId)
+            resultsPath = os.path.join(pullPath, options.PARTITION_RESULTS_FOLDER_NAME, options.PARTITION_RESULTS_FILENAME)
+            partitions = self._partitionsFromCSV(resultsPath)
+        finally:
+            self._LOCKED_PULLS.release(fullPullRequestId)
+                
         return self._partitionsToMergelyJSON(projectId, pullRequestId, partitions)
     
     '''
@@ -133,6 +158,8 @@ class PartitionController(object):
             raise InvalidProjectIdException()
         return '/'.join((projectOwner, projectName))
         
+    def _getFullPullRequestId(self, projectId, pullRequestId):
+        return '/'.join((projectId, str(pullRequestId)))
     
     def _partitionsFromCSV(self, csvPath):
         partitions = {}
