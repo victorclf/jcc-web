@@ -67,12 +67,8 @@ class PartitionResource(object):
     @cherrypy.expose
     @cherrypy.tools.accept(media='application/json')
     def index(self, projectOwner, projectName, pullRequestId):
-        projectId = '/'.join((projectOwner, projectName))
         try:
-            pullRequestDownloaded = self.partitionController.downloadPullRequestFromGitHub(projectId, pullRequestId)
-            self.partitionController.partitionPullRequest(projectId, pullRequestId)
-            partitionsJSON = self.partitionController.getPartitionJSON(projectId, pullRequestId)
-            return partitionsJSON;
+            return self.partitionController.getPartitionJSON(projectOwner, projectName, pullRequestId)
         except Exception as e:
             mapToWebException(e)
 
@@ -93,9 +89,8 @@ class PullRequestFilesResource(object):
     '''    
     @cherrypy.expose
     def index(self, projectOwner, projectName, pullRequestId, relativeFilePath):
-        projectId = '/'.join((projectOwner, projectName))
         try:
-            path = self.partitionController.getPullRequestFilePath(projectId, pullRequestId, relativeFilePath)
+            path = self.partitionController.getPullRequestFilePath(projectOwner, projectName, pullRequestId, relativeFilePath)
             return serve_file(path)
         except Exception as e:
             mapToWebException(e)

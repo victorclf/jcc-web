@@ -36,13 +36,13 @@ class PartitionControllerTest(unittest.TestCase):
     def testDownloadPullRequest(self):
         shutil.rmtree(options.PULL_REQUESTS_PATH, True)
         self.assertFalse(os.path.exists(os.path.join(self.pullPath)))
-        self.assertTrue(self.controller.downloadPullRequestFromGitHub(self.projectId, self.pullRequestId))
+        self.assertTrue(self.controller._downloadPullRequestFromGitHub(self.projectId, self.pullRequestId))
         self.assertTrue(os.path.exists(os.path.join(self.pullPath)))
-        self.assertFalse(self.controller.downloadPullRequestFromGitHub(self.projectId, self.pullRequestId))
+        self.assertFalse(self.controller._downloadPullRequestFromGitHub(self.projectId, self.pullRequestId))
     
     @marks.slow
     def testPartitionPullRequest(self):
-        self.controller.partitionPullRequest(self.projectId, self.pullRequestId)
+        self.controller._partitionPullRequest(self.projectId, self.pullRequestId)
         self.assertTrue(os.path.exists(os.path.join(self.pullPath, options.PARTITION_RESULTS_FOLDER_NAME)))
         self.assertTrue(os.path.exists(os.path.join(self.pullPath, options.PARTITION_RESULTS_FOLDER_NAME, 'partitions.csv')))
         for root, dirs, files in os.walk(self.pullPath):
@@ -55,6 +55,5 @@ class PartitionControllerTest(unittest.TestCase):
                     self.assertFalse(filecmp.cmp(oldF, os.path.join(root, f), False))
     
     def testGetPartitionJSON(self):
-        self.controller.partitionPullRequest(self.projectId, self.pullRequestId)
-        pJSON = self.controller.getPartitionJSON(self.projectId, self.pullRequestId)
+        pJSON = self.controller.getPartitionJSON(self.projectOwner, self.projectName, self.pullRequestId)
         self.assertTrue(pJSON)

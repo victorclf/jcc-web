@@ -3,6 +3,7 @@ import shutil
 import urllib
 import codecs
 import csv
+import re
 
 import cherrypy
 import github
@@ -23,6 +24,8 @@ class InvalidRelativeFilePathException(util.RichException): pass
 
 
 class PartitionController(object):
+    _PROJECT_ID_REGEX = re.compile('[A-Za-z0-9-_]+$')
+    
     def __init__(self):
         self.__gitHubInterface = None
     
@@ -30,20 +33,33 @@ class PartitionController(object):
     def gh(self):
         return self.__gitHubInterface if self.__gitHubInterface else self._connectToGitHub()
     
-    def getPullRequestFilePath(self, projectId, pullRequestId, relativeFilePath):
+    def getPullRequestFilePath(self, projectOwner, projectName, pullRequestId, relativeFilePath):
+        projectId = self._parseProjectId(projectOwner, projectName)
         pullRequestId = self._parsePullRequestId(pullRequestId)
+        
         path = os.path.abspath(os.path.join(options.PULL_REQUESTS_PATH, projectId, str(pullRequestId), relativeFilePath))
         # For security, make sure the requested files are inside the pull requests directory
         if not path.startswith(options.PULL_REQUESTS_PATH):
             raise InvalidRelativeFilePathException()
         return path
     
+    def getPartitionJSON(self, projectOwner, projectName, pullRequestId):
+        projectId = self._parseProjectId(projectOwner, projectName)
+        pullRequestId = self._parsePullRequestId(pullRequestId)
+        
+        self._downloadPullRequestFromGitHub(projectId, pullRequestId)
+        self._partitionPullRequest(projectId, pullRequestId)
+        
+        pullPath = self._getPullRequestPath(projectId, pullRequestId)
+        resultsPath = os.path.join(pullPath, options.PARTITION_RESULTS_FOLDER_NAME, options.PARTITION_RESULTS_FILENAME)
+        partitions = self._partitionsFromCSV(resultsPath)
+        return self._partitionsToMergelyJSON(projectId, pullRequestId, partitions)
+    
     '''
     returns False: pull request had been previously downloaded and local copy is up-to-date
     returns True: pull request was downloaded
     '''
-    def downloadPullRequestFromGitHub(self, projectId, pullRequestId):
-        pullRequestId = self._parsePullRequestId(pullRequestId)
+    def _downloadPullRequestFromGitHub(self, projectId, pullRequestId):
         try:
             repo = self.gh.get_repo(projectId)
         except github.UnknownObjectException:
@@ -73,8 +89,7 @@ class PartitionController(object):
         self._updatePullRequestCacheInfo(pull, pullPath)
         return True
         
-    def partitionPullRequest(self, projectId, pullRequestId):
-        pullRequestId = self._parsePullRequestId(pullRequestId)
+    def _partitionPullRequest(self, projectId, pullRequestId):
         pullPath = self._getPullRequestPath(projectId, pullRequestId)
         resultsPath = os.path.join(pullPath, options.PARTITION_RESULTS_FOLDER_NAME)
         partitioningFilePath = os.path.join(resultsPath, options.PARTITION_RESULTS_FILENAME)
@@ -106,18 +121,18 @@ class PartitionController(object):
                     finally:
                         os.chdir(previousPath)
         
-    def getPartitionJSON(self, projectId, pullRequestId):
-        pullRequestId = self._parsePullRequestId(pullRequestId)
-        pullPath = self._getPullRequestPath(projectId, pullRequestId)
-        resultsPath = os.path.join(pullPath, options.PARTITION_RESULTS_FOLDER_NAME, options.PARTITION_RESULTS_FILENAME)
-        partitions = self._partitionsFromCSV(resultsPath)
-        return self._partitionsToMergelyJSON(projectId, pullRequestId, partitions)
     
     def _parsePullRequestId(self, pullRequestId):
         try:
             return int(pullRequestId)
         except:
             raise InvalidPullRequestIdException()
+        
+    def _parseProjectId(self, projectOwner, projectName):
+        if not self._PROJECT_ID_REGEX.match(projectOwner) or not self._PROJECT_ID_REGEX.match(projectName):
+            raise InvalidProjectIdException()
+        return '/'.join((projectOwner, projectName))
+        
     
     def _partitionsFromCSV(self, csvPath):
         partitions = {}
