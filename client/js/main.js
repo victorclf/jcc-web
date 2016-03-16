@@ -123,6 +123,7 @@ var resizeDivs = function() {
 	$('#main_div').height(computeMainWindowHeight());
 	$('#code_editor_div').width(computeCodeEditorMaxWidth());
 	$('#code_editor_div').height(computeCodeEditorMaxHeight());
+	$('#faq_div_content').css('max-height', computeMainWindowHeight() + 'px');
 }
 
 var onResize = function() {
@@ -324,11 +325,19 @@ var initHeaderButtons = function() {
 	
 	$('#partition_button').click(partitionPullRequest);
 	
-	$('#menu_button').click(function() {
+	$('#about_button').click(function() {
 		if ($('#about_div').is(":hidden")) {
 			$('#about_div').slideDown("slow");
 		} else {
 			$('#about_div').slideUp("fast");
+		}
+	});
+	
+	$('#faq_button').click(function() {
+		if ($('#faq_div').is(":hidden")) {
+			$('#faq_div').fadeIn("slow");
+		} else {
+			$('#faq_div').fadeOut("fast");
 		}
 	});
 };
@@ -336,6 +345,16 @@ var initHeaderButtons = function() {
 var initAboutBox = function() {
 	$('#about_close_button').click(function() {
 		$('#about_div').slideUp("fast");
+	});
+};
+
+var initFaqBox = function() {
+	$('#faq_close_button').click(function() {
+		$('#faq_div').fadeOut("fast");
+	});
+	
+	$('.faq_question_header').click(function() {
+		$(this).next().slideToggle("fast");
 	});
 };
 
@@ -397,6 +416,7 @@ $(document).ready(function() {
 	initCodeEditor();
 	initHeaderButtons();
 	initAboutBox();
+	initFaqBox();
 	initMessageBox();
 	initWaitCursorCallbacks();
 	$(window).trigger('resize');

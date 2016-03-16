@@ -18,12 +18,12 @@
 </head>
 <body>
 	<header>
-		<h1>JClusterChanges</h1>
+		<h1 id="about_button">JClusterChanges</h1>
 		<div id="pull_request_url_bar">
 			<input id="pull_request_url_input" type="url" placeholder="Link to pull request: https://github.com/ORGANIZATION/PROJECT/pull/X" />
 			<input id="partition_button" type="button" />
 		</div>
-		<input id="menu_button" type="button" />
+		<input id="faq_button" type="button" />
 	</header>
 	
 	<div id="main_div">
@@ -42,15 +42,74 @@
 			<p>JClusterChanges is an implementation of <a href="http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=7194568" target="_blank">ClusterChanges</a> for Java software projects, a lightweight static analysis technique to decompose changesets in different partitions that can be reviewed independently.</p>
 			<p>Notice that the tool only analyzes the after-files, consequently deleted files are not shown.</p>
 			<p>Created by Victor Freire as part of his Master's dissertation under the supervision of Jorge Figueiredo, João Brunet and Dalton Serey.</p>
+			<p></p>
 		</div>
 		<input id="about_close_button" type="button" />
 	</div>
+	
 	<div id="msgbox_div">
 		<div id="msgbox_div_content">
 			<img src="/images/error.png" alt="error icon">
 			<p id="msgbox_text">Error</p>
 			<div id="msgbox_close_button_div">
 				<input id="msgbox_close_button" type="button" value="Close" />
+			</div>
+		</div>
+	</div>
+	
+	<div id="faq_div">
+		<div id="faq_div_header">
+			<h1>FAQ</h1>
+			<input id="faq_close_button" type="button" />
+		</div>
+		<div id="faq_div_content">
+			<div class="faq_question">
+				<div class="faq_question_header">
+					Q: How do I use this?
+				</div>
+				<div class="faq_question_content">
+					<p>Type the URL of a GitHub pull request that you want to partition in the search bar at the top.</p>
+					<p>Notice that the tool only analyzes the after-files of Java source files, consequently deleted files and non-Java source code files are not shown.</p>
+				</div>
+			</div>
+			
+			<div class="faq_question">
+				<div class="faq_question_header">
+					Q: What is JClusterChanges?
+				</div>
+				<div class="faq_question_content">
+					<p>JClusterChanges is an implementation of <a href="http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=7194568" target="_blank">ClusterChanges</a> for Java software projects.</p>
+					<p>It can decompose pull requests from GitHub that contain independent changes into independent partitions. These partitions can then be reviewed separately in order to improve understanding.</p>
+					<p>This tool was created by Victor Freire as part of his Master's dissertation under the supervision of Jorge Figueiredo, João Brunet and Dalton Serey.</p>
+				</div>
+			</div>
+			
+			<div class="faq_question">
+				<div class="faq_question_header">
+					Q: What is ClusterChanges?
+				</div>
+				<div class="faq_question_content">
+					<p><a href="http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=7194568" target="_blank">ClusterChanges</a> is a lightweight static analysis technique for decomposing changesets in different partitions that can be reviewed independently. It was developed by Mike Barnett, Christian Bird, João Brunet and Shuvendu K. Lahiri and published in the proceedings of ICSE 2015.</p>
+					<p>JClusterChanges is an implementation of this technique that works with Java code.</p>
+				</div>
+			</div>
+									
+			<div class="faq_question">
+				<div class="faq_question_header">
+					Q: What is the difference between a Non-Trivial and a Trivial partition?
+				</div>
+				<div class="faq_question_content">
+					<p>TODO</p>
+				</div>
+			</div>
+			
+			<div class="faq_question">
+				<div class="faq_question_header">
+					Q: Why do some pull requests take so much time to process?
+				</div>
+				<div class="faq_question_content">
+					<p>Parsing each source code file is a time consuming process. You may have to wait a few minutes to view the generated partitioning.</p>
+				</div>
 			</div>
 		</div>
 	</div>
