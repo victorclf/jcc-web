@@ -40,9 +40,7 @@
 		<div id="about_div_content">
 			<h1>JClusterChanges</h1>
 			<p>JClusterChanges is an implementation of <a href="http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=7194568" target="_blank">ClusterChanges</a> for Java software projects, a lightweight static analysis technique to decompose changesets in different partitions that can be reviewed independently.</p>
-			<p>Notice that the tool only analyzes the after-files, consequently deleted files are not shown.</p>
 			<p>Created by Victor Freire as part of his Master's dissertation under the supervision of Jorge Figueiredo, João Brunet and Dalton Serey.</p>
-			<p></p>
 		</div>
 		<input id="about_close_button" type="button" />
 	</div>
@@ -65,22 +63,13 @@
 		<div id="faq_div_content">
 			<div class="faq_question">
 				<div class="faq_question_header">
-					Q: How do I use this?
-				</div>
-				<div class="faq_question_content">
-					<p>Type the URL of a GitHub pull request that you want to partition in the search bar at the top.</p>
-					<p>Notice that the tool only analyzes the after-files of Java source files, consequently deleted files and non-Java source code files are not shown.</p>
-				</div>
-			</div>
-			
-			<div class="faq_question">
-				<div class="faq_question_header">
 					Q: What is JClusterChanges?
 				</div>
 				<div class="faq_question_content">
 					<p>JClusterChanges is an implementation of <a href="http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=7194568" target="_blank">ClusterChanges</a> for Java software projects.</p>
-					<p>It can decompose pull requests from GitHub that contain independent changes into independent partitions. These partitions can then be reviewed separately in order to improve understanding.</p>
+					<p>It can decompose pull requests from GitHub that contain independent changes into independent partitions, which can then be reviewed separately in order to improve understanding.</p>
 					<p>This tool was created by Victor Freire as part of his Master's dissertation under the supervision of Jorge Figueiredo, João Brunet and Dalton Serey.</p>
+					<p>The source code for JClusterChanges can be found <a href="https://bitbucket.org/victorclf/ccjava">here</a>.</p>
 				</div>
 			</div>
 			
@@ -90,25 +79,98 @@
 				</div>
 				<div class="faq_question_content">
 					<p><a href="http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=7194568" target="_blank">ClusterChanges</a> is a lightweight static analysis technique for decomposing changesets in different partitions that can be reviewed independently. It was developed by Mike Barnett, Christian Bird, João Brunet and Shuvendu K. Lahiri and published in the proceedings of ICSE 2015.</p>
+					<p>The ClusterChanges algorithm partitions the code by finding relationships between the diffs in the source code.</p>
 					<p>JClusterChanges is an implementation of this technique that works with Java code.</p>
-				</div>
-			</div>
-									
-			<div class="faq_question">
-				<div class="faq_question_header">
-					Q: What is the difference between a Non-Trivial and a Trivial partition?
-				</div>
-				<div class="faq_question_content">
-					<p>TODO</p>
 				</div>
 			</div>
 			
 			<div class="faq_question">
 				<div class="faq_question_header">
-					Q: Why do some pull requests take so much time to process?
+					Q: How do I use this?
 				</div>
 				<div class="faq_question_content">
-					<p>Parsing each source code file is a time consuming process. You may have to wait a few minutes to view the generated partitioning.</p>
+					<p>Type the URL of a GitHub pull request that you want to partition in the search bar at the top. Then, either press enter or click the partition button (gears icon).</p>
+					<p>After some time, the results will be loaded and you can access them by using the partition tree on the left side.</p>
+					<p>Each partition contains a set of related diffs and these are organized by file in the tree.</p>
+					<p>By clicking on the diff lines, the editor will open the associated file and highlight the chosen diff.</p>
+				</div>
+			</div>
+			
+			<div class="faq_question">
+				<div class="faq_question_header">
+					Q: Why are some files not inside any of the partitions?
+				</div>
+				<div class="faq_question_content">
+					<p>The tool only analyzes the after-files of Java source files, consequently deleted files and non-Java source code files are not considered.</p>
+				</div>
+			</div>
+									
+			<div class="faq_question">
+				<div class="faq_question_header">
+					Q: What is the difference between a Non-Trivial Partition (NTP) and a Trivial Partition (TP)?
+				</div>
+				<div class="faq_question_content">
+					<p>A partition is said to be trivial if it contains a single diff or multiple diffs that are inside the same method. A partition that is not trivial is called non-trivial.</p>
+				</div>
+			</div>
+			
+			<div class="faq_question">
+				<div class="faq_question_header">
+					Q: I tried to partition a pull request but nothing happened.
+				</div>
+				<div class="faq_question_content">
+					<p>Parsing each source code file is a time consuming process and it's done on the server. Depending on the complexity of the pull request and on the server load, you may have to wait up to a few minutes before viewing the generated partitioning.</p>
+				</div>
+			</div>
+			
+			<div class="faq_question">
+				<div class="faq_question_header">
+					Q: What are the known limitations of this tool?
+				</div>
+				<div class="faq_question_content">
+					<p>Some relationships between diffs are not detected properly. This seem to occur mostly in code using the newest features of Java.</p>
+				</div>
+			</div>
+			
+			<div class="faq_question">
+				<div class="faq_question_header">
+					Q: Does the tool work with repositories other than GitHub?
+				</div>
+				<div class="faq_question_content">
+					<p>For the time being, the tool can only analyze the code from GitHub pull requests. It is possible that we add support for other code repositories in the future.</p>
+				</div>
+			</div>
+			
+			<div class="faq_question">
+				<div class="faq_question_header">
+					Q: How does ClusterChanges determine if two diffs are related?
+				</div>
+				<div class="faq_question_content">
+					<p>Briefly, ClusterChanges defines three types of relationships: def-use, use-use and same enclosing method.</p>
+					<p>When a diff X has a definition D and a diff Y references (uses) D, we say there is a def-use relationship between these two diffs.</p>
+					<p>When a diff X references a definition D not inside any diff but present in the changeset and a diff Y also references D, we say there is a use-use relationship between X and Y.</p>
+					<p>When two diffs belong to the same method, we say they are related.</p>
+				</div>
+			</div>
+			
+			<div class="faq_question">
+				<div class="faq_question_header">
+					Q: What data is collected?
+				</div>
+				<div class="faq_question_content">
+					<p>In the future, we might log requests and their associated IP addresses in order to answer questions such as what kind of pull requests are accessed the most and what the workflow of a typical user is.</p>
+				</div>
+			</div>
+			
+			<div class="faq_question">
+				<div class="faq_question_header">
+					Q: What libraries are used in the program?
+				</div>
+				<div class="faq_question_content">
+					<p>We would like to thank all the developers who contributed to these libraries:</p>
+					<p>Java: Eclipse JDT, Apache Commons, JUnit, Mockito</p>
+					<p>Python: cherrypy, PyGitHub, simplejson</p>
+					<p>Javascript: JQuery, jstree, Mergely, codemirror</p>
 				</div>
 			</div>
 		</div>
