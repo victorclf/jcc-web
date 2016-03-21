@@ -287,6 +287,18 @@ var jccURLToGitHubURL = function(jccURL) {
 	return 'https://github.com/' + projectOwner + '/' + projectName + '/pull/' + pullRequestId;
 };
 
+var startLoadingState = function() {
+	$('#loadingbox_div').css('display', 'flex');
+	//~ $('#pull_request_url_input').prop('disabled', 'true');
+	//~ $('partition_button').prop('disabled', 'true');
+};
+
+var stopLoadingState = function() {
+	$('#loadingbox_div').css('display', 'none');
+	//~ $('#pull_request_url_input').prop('disabled', 'false');
+	//~ $('#partition_button').prop('disabled', 'false');
+};
+
 var partitionPullRequest = function() {
 	var url = $('#pull_request_url_input').val();
 	
@@ -299,14 +311,20 @@ var partitionPullRequest = function() {
 	}
 	
 	clearEditor();
+	startLoadingState();
 	
 	var partitionsURL = pullURL + 'partitions/';
 	$('#partition_tree').jstree(true).settings.core.data = {
 				"url" : partitionsURL,
 				"dataType" : "json",
+				"success": function(data, textStatus, jqXHR) {
+				},
 				"error": function(jqXHR, textStatus, errorThrown) { 
 					displayMessageBox(jqXHR.responseText);
 					clearTree();
+				},
+				"complete": function(data_jqXHR, textStatus, jqXHR_errorThrown) {
+					stopLoadingState();
 				}
 	};
 	$('#partition_tree').jstree(true).refresh();

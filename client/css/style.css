@@ -116,6 +116,7 @@ header h1:hover {
 }
 
 #main_div {
+	position: relative;
 	margin: 0;
 	padding: 0;
 	height: 80%;
@@ -287,6 +288,47 @@ header h1:hover {
 
 #faq_close_button:hover {
 	background-color: rgb(150, 150, 200);
+}
+
+#loadingbox_div {
+	background: rgba(0, 0, 0, 0.15);
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	z-index: 5;
+
+	align-items: center;
+	justify-content: center;
+/*
+	display: flex;
+*/
+	display: none;
+}
+
+#loadingbox_div_content {
+	background: #eaeaea;
+	box-shadow: 0px 0px 5px 1px #c8c8c8;
+	color: #1F1F1F;
+	
+	max-width: 512px;
+	
+	padding: 20px;
+}
+
+#loadingbox_div_content img {
+	display: block;
+	margin: 0px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 32px;
+	height: 32px;
+}
+
+#loadingbox_div p {
+	text-align: center;
+	line-height: 1.5em;
 }
 
 #msgbox_div {
