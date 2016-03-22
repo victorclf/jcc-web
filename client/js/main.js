@@ -289,14 +289,14 @@ var jccURLToGitHubURL = function(jccURL) {
 
 var startLoadingState = function() {
 	$('#loadingbox_div').css('display', 'flex');
-	//~ $('#pull_request_url_input').prop('disabled', 'true');
-	//~ $('partition_button').prop('disabled', 'true');
+	$('#pull_request_url_input').prop('disabled', true);
+	$('#partition_button').prop('disabled', true);
 };
 
 var stopLoadingState = function() {
 	$('#loadingbox_div').css('display', 'none');
-	//~ $('#pull_request_url_input').prop('disabled', 'false');
-	//~ $('#partition_button').prop('disabled', 'false');
+	$('#pull_request_url_input').prop('disabled', false);
+	$('#partition_button').prop('disabled', false);
 };
 
 var partitionPullRequest = function() {
@@ -341,8 +341,15 @@ var initHeaderButtons = function() {
 		}
 	});
 	
-	$('#partition_button').click(partitionPullRequest);
+	$('#partition_button').click(function() {
+		if (!$(this).prop('disabled')) {
+			partitionPullRequest();
+		}
+	});
 	
+	// Necessary because browser may save disabled button state after a page refresh
+	stopLoadingState();
+		
 	$('#about_button').click(function() {
 		if ($('#about_div').is(":hidden")) {
 			$('#about_div').slideDown("slow");
