@@ -22,7 +22,7 @@
 .mergely.a.lhs.start.end,
 .mergely.a.rhs.end { border-bottom: 1px solid #a3d1ff; }
 */
-.mergely.a.rhs ~ pre > span { background-color: #ddeeff; color: #0002ca; }
+.mergely.a.rhs ~ pre > span { color: #0002ca; }
 /*
 .mergely.a.lhs.start.end.first { border-bottom: 0; border-top: 1px solid #a3d1ff; }
 */
@@ -46,7 +46,7 @@
 .mergely.c.rhs.end { border-bottom: 1px solid #a3a3a3; }
 */
 
-.mergely.ch.a.rhs { background-color: #ddeeff; color: #0002ca; }
+.mergely.ch.a.rhs { color: #0002ca; }
 .mergely.ch.d.lhs { background-color: #edc0c0; text-decoration: line-through; color: #888; }
 
 .diffFromSelectedPartition { background-color: #d0f0d0; }
