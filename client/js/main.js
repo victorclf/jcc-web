@@ -446,6 +446,9 @@ $(document).ready(function() {
 	initWaitCursorCallbacks();
 	$(window).trigger('resize');
 	handleURLState();
+	window.onpopstate = function(event) {
+		handleURLState();
+	};
 });
 
 $(window).resize(onResize);
