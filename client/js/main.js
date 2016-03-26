@@ -32,6 +32,34 @@ var pathBar = function() {
 var diffRegionHighlighter = function() {
 	var _diffRegions = '';
 	var _selectedDiffRegion = '';
+	var _rhsEditor = $('#code_editor').mergely('cm', 'rhs');
+	
+	var _markLineAsDiff = function(lineNumber) {
+		var lineId = lineNumber - 1;
+		_rhsEditor.addLineClass(lineId, 'background', 'diffFromSelectedPartition');
+	};
+	
+	var _isDiffRegionSelected = function(diffRegion) {
+		return _selectedDiffRegion
+				&& _selectedDiffRegion[0] === diffRegion[0]
+				&& _selectedDiffRegion[1] === diffRegion[1];
+	};
+	
+	var _markLineAsSelected = function(lineNumber) {
+		var lineId = lineNumber - 1;
+		_rhsEditor.addLineClass(lineId, 'background', 'diffSelected');
+	};
+	
+	var _unmarkLineAsSelected = function(lineNumber) {
+		var lineId = lineNumber - 1;
+		_rhsEditor.removeLineClass(lineId, 'background', 'diffSelected');
+	};
+	
+	var _addDiffSeparatorToLine = function(lineNumber) {
+		var lineId = lineNumber - 1;
+		// Use a thin border to separate adjacent diff-regions.
+		_rhsEditor.addLineClass(lineId, 'background', 'diffFromSelectedPartitionSplit');
+	};
 	
 	return {
 		clear: function() {
@@ -40,51 +68,44 @@ var diffRegionHighlighter = function() {
 		},
 		setDiffRegions: function(diffRegions) {
 			// Assumes that whole document is reloaded when diff-regions 
-			// to highlight are changed.
+			// to highlight are changed. So it doesn't reset the CSS of any lines.
 			_diffRegions = diffRegions;
 			_selectedDiffRegion = null;
+			_rhsEditor = $('#code_editor').mergely('cm', 'rhs');
 		},
 		setSelectedDiffRegion: function(selectedDiffRegion) {
 			// Assumes that the whole document is not reloaded when
-			// selected diff-region change.
-			var rhsCm = $('#code_editor').mergely('cm', 'rhs');
+			// selected diff-region change. Deselect current lines.
 			if (_selectedDiffRegion) {
-				for (var j = _selectedDiffRegion[0]; j <= _selectedDiffRegion[1]; ++j) {
-					var lineId = j - 1;
-					rhsCm.removeLineClass(lineId, 'background', 'diffSelected');
+				for (var line = _selectedDiffRegion[0]; line <= _selectedDiffRegion[1]; ++line) {
+					_unmarkLineAsSelected(line);
 				}
 			}
 			
 			_selectedDiffRegion = selectedDiffRegion;
 			
 			if (_selectedDiffRegion) {
-				for (var j = _selectedDiffRegion[0]; j <= _selectedDiffRegion[1]; ++j) {
-					var lineId = j - 1;
-					rhsCm.addLineClass(lineId, 'background', 'diffSelected');
+				for (var line = _selectedDiffRegion[0]; line <= _selectedDiffRegion[1]; ++line) {
+					_markLineAsSelected(line);
 				}
 			}
 		},
 		highlight: function() {
-			var rhsCm = $('#code_editor').mergely('cm', 'rhs');
-			
 			if (_diffRegions) {
-				var lastDiffLineId = -1;
+				var lastLineOfPreviousDiff = -1;
 				for (var i = 0; i < _diffRegions.length; ++i) {
 					var diffRegion = _diffRegions[i];
-					for (var j = diffRegion[0]; j <= diffRegion[1]; ++j) {
-						var lineId = j - 1;
-						rhsCm.addLineClass(lineId, 'background', 'diffFromSelectedPartition');
-						// Use a thin border to separate adjacent diff-regions.
-						if (lineId !== 0 && lineId === lastDiffLineId + 1) {
-							rhsCm.addLineClass(lineId, 'background', 'diffFromSelectedPartitionSplit');
+					for (var line = diffRegion[0]; line <= diffRegion[1]; ++line) {
+						_markLineAsDiff(line);
+						if (_isDiffRegionSelected(diffRegion)) {
+							_markLineAsSelected(line);
+						}
+						if (line !== 1 && line === lastLineOfPreviousDiff + 1) {
+							_addDiffSeparatorToLine(line);
 						}
 					}
-					lastDiffLineId = lineId;
+					lastLineOfPreviousDiff = line;
 				}
-			}
-			
-			if (_selectedDiffRegion) {
-				
 			}
 		}
 	}
