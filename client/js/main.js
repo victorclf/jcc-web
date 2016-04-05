@@ -104,7 +104,7 @@ var diffRegionHighlighter = function() {
 							_addDiffSeparatorToLine(line);
 						}
 					}
-					lastLineOfPreviousDiff = line;
+					lastLineOfPreviousDiff = line - 1;
 				}
 			}
 		}
