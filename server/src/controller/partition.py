@@ -5,6 +5,7 @@ import codecs
 import csv
 import re
 import threading
+import traceback
 
 import cherrypy
 import github
@@ -108,6 +109,7 @@ class PartitionController(object):
                 break
             except Exception, e:
                 if retries >= options.MAX_DOWNLOAD_RETRIES:
+                    cherrypy.log.error(traceback.format_exc())
                     raise FailedToDownloadPullRequestException(cause=e)
                 else:
                     cherrypy.log.error('Failed to download pull request %s #%d. Retrying...' % (projectId, pullRequestId))
