@@ -110,7 +110,7 @@ class PartitionController(object):
                 if retries >= options.MAX_DOWNLOAD_RETRIES:
                     raise FailedToDownloadPullRequestException(cause=e)
                 else:
-                    cherrypy.log.error('Failed to download pull request %s #%d. Retrying...' % (projectId, pull.number))
+                    cherrypy.log.error('Failed to download pull request %s #%d. Retrying...' % (projectId, pullRequestId))
                     retries += 1
         self._updatePullRequestCacheInfo(pull, pullPath)
         return True
